@@ -76,12 +76,15 @@
     @media(max-width:760px){
       /* Primera pantalla: un escenario completo, con el cobro justo a sus pies. */
       .mission{display:flex;align-items:center;gap:8px;margin:0 0 8px}.mission>div:first-child{min-width:0}.mission .micro{display:none}.mission h1{font-size:clamp(1rem,4.2vw,1.42rem);margin:0}.mission p{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mission .modebar{margin:0;flex:none}.mission .modebar label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mission .modebar select{font-size:.72rem;padding:4px;min-height:36px;max-width:47vw}
-      .cabinet{display:grid;grid-template:1fr / 1fr;place-items:center;height:clamp(216px,35vh,355px);height:clamp(216px,35svh,355px);padding:5px 0 9px;background:#191632;border-color:#453b61}
+      .cabinet{display:grid;grid-template:1fr / 1fr;place-items:center;height:clamp(216px,35vh,355px);height:clamp(216px,35svh,355px);padding:5px 0 30px;background:#191632;border-color:#453b61}
       .escenaMovil{display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.cabinet:before{display:none}.cabinet .sprite{position:relative;grid-area:1/1;justify-self:center;align-self:center;width:auto;height:100%;max-width:73%;max-height:none;filter:drop-shadow(3px 6px 3px #080817a8)}
       .cabtag,.cabplate{position:absolute;z-index:1;grid-column:auto;grid-row:auto;font:700 .56rem/1.3 var(--mono);letter-spacing:.055em;background:#0b0b1bc7;color:#f3e7f9;border:1px solid #85719770;border-radius:4px;padding:4px 6px;margin:0}.cabtag{top:8px;left:8px}.cabplate{left:8px;right:8px;bottom:7px;max-width:none;text-align:center;font-size:.58rem;white-space:nowrap}.cabinet.dispensed .cabplate{color:#b3ffbc}
       .stage>.card:not(.plot) .panel-head{margin-bottom:5px}.stage>.card:not(.plot) .panel-head .micro{display:none}.stage>.card:not(.plot) .panel-head h2{font-size:.94rem}.stage>.card .product{padding:6px 0 10px;border:0}.product b{font-size:1rem}.price{font-size:1.05rem}.display-screen{border-radius:8px}.btn-coin{min-height:52px!important}.token{height:27px;width:27px}
     }
     @media(max-width:760px) and (max-height:660px){.cabinet{height:clamp(166px,30svh,216px)}}
+    .qrImage{display:block;width:260px;max-width:100%;height:auto;margin:16px auto;border-radius:8px;background:white}.qrLink{display:block;overflow-wrap:anywhere;color:#c8bcff;margin:12px 0}.qrActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.qrActions a{text-decoration:none}
+    .actionLike{background:#302039;color:#ffd9e4;border-color:#90516d;position:relative;overflow:hidden}.actionLike:hover{background:#48263e}.actionLike.liked{background:#542039;border-color:#f35b7e;color:#fff}.heartIcon{display:inline-block;font-size:1.4em;vertical-align:middle;line-height:1;margin-right:8px}.liked .heartIcon{color:#ff426b}.likePop .heartIcon{animation:heartPop .5s ease-out}.heartBurst{position:absolute;left:50%;top:25%;color:#ff426b;pointer-events:none;animation:heartRise .8s ease-out forwards}.socialLike{max-width:360px;min-height:56px;margin:8px 0 14px}.likeHint{font-size:.8rem;color:var(--text-muted);margin-top:8px}@keyframes heartPop{0%,100%{transform:scale(1)}40%{transform:scale(1.5)}70%{transform:scale(.9)}}@keyframes heartRise{from{opacity:1;transform:translate(-50%,0) scale(.7)}to{opacity:0;transform:translate(-50%,-45px) scale(1.5)}}@media(prefers-reduced-motion:reduce){.heartBurst{display:none}}
+    .catalogo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 5px}.productoBtn{min-width:0;min-height:78px;padding:8px 3px;border:1px solid #474b70;border-radius:8px;background:#1b2137;color:#d7d7e9;cursor:pointer;font:600 .68rem var(--mono);display:flex;flex-direction:column;align-items:center;gap:5px}.productoBtn svg{width:24px;height:34px;flex:none;filter:drop-shadow(0 2px 2px #050711)}.productoBtn[aria-pressed=true]{border-color:#ffd27b;background:#383047;color:#ffe3a5;box-shadow:inset 0 0 0 1px #ffd27b}.productoBtn:disabled{cursor:default;opacity:.6}.productoBtn[aria-pressed=true]:disabled{opacity:1}.catalogoNota{font-size:.71rem;color:var(--text-muted);margin:6px 0 12px}.product-mark svg{width:23px;height:30px}.vueltoResumen{color:#ffda89;font:700 .78rem var(--mono);margin-top:8px}.vueltoResumen:empty{display:none}.monedaSalida{animation:coinOut .85s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--delay)}@keyframes coinOut{0%{transform:translate(var(--inicio-x),-23px) scale(.35);opacity:0}20%{opacity:1}68%{transform:translate(0,0) scale(1)}83%{transform:translate(0,-7px) scale(1)}100%{transform:translate(0,0) scale(1);opacity:1}}@media(prefers-reduced-motion:reduce){.monedaSalida{animation:none}}
   </style>
 </head>
 <body>
@@ -96,7 +99,7 @@
   <aside class="rail" id="rail"><div class="railTop"><div class="railIcon" aria-hidden="true">◈ ▪ 07 ▪ ◈</div><strong>KIOSCO<br>ARCADE</strong><small>Mate discreta · FISI</small></div><nav class="tabs" id="tabs" aria-label="Secciones del kiosco"><span class="navGroup">SALA DE JUEGO</span>
     <button class="tab-btn active" data-tab="simulador" aria-current="page"><span aria-hidden="true">▷</span>Máquina</button><button class="tab-btn" data-tab="como"><span aria-hidden="true">?</span>Guía rápida</button><span class="navGroup">CUADERNO</span><button class="tab-btn" data-tab="tablas"><span aria-hidden="true">δ</span>Autómata</button><button class="tab-btn" data-tab="recurrencia"><span aria-hidden="true">Σ</span>Recurrencia</button><button class="tab-btn" data-tab="numeracion"><span aria-hidden="true">01</span>Numeración</button><button class="tab-btn" data-tab="sorpresa"><span aria-hidden="true">◎</span>Predicción</button><span class="navGroup">PROYECTO</span><button class="tab-btn" data-tab="megusta"><span aria-hidden="true">♡</span>Me gusta</button><button class="tab-btn" data-tab="config"><span aria-hidden="true">◇</span>Equipo</button>
   </nav><svg class="skyline" viewBox="0 0 180 140" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges"><defs><linearGradient id="atardecer" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#29203d"/><stop offset=".65" stop-color="#865379"/><stop offset="1" stop-color="#d38382"/></linearGradient><pattern id="ventanas" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="3" height="4" x="3" y="2" fill="#b17c98"/></pattern></defs><rect width="180" height="140" fill="url(#atardecer)"/><path fill="#d99892" d="M14 56h38v3H5v-2h9zm90-16h35v3h-48v-2h13z"/><path fill="#33304e" d="M0 84h12V71h10v20h8V66h12v27h8V79h20v18h10V59h4v-7h3v7h5v36h15V75h16v25h13V65h17v25h17V74h10v66H0z"/><path fill="url(#ventanas)" d="M2 91h9v43H2zm29-19h10v62H31zm50-6h10v69H81zm58 6h12v63h-12z"/><path fill="#16182b" d="M0 115h67v8h23v17H0zm110 11h27v-11h25v12h18v13h-70zM30 114v-7h2v-7h4v-5h8v-7h2v-5h2v7h5v-6h2v12h-3v6h-3v11h3v3H31zm1-3h-7v-3h-5v-7h2v5h5v2h5z"/></svg></aside>
-  <dialog class="qrDialog" id="dialogQR" aria-labelledby="tituloQR"><span class="micro">Compartir / Aula</span><h2 id="tituloQR">Abre el kiosco en tu celular</h2><p id="estadoQR"></p><div id="vistaQR"></div><button class="btn btn-example" id="irConfigQR">Preparar un QR</button><button class="btn btn-reset" id="cerrarQR">Cerrar</button></dialog>
+  <dialog class="qrDialog" id="dialogQR" aria-labelledby="tituloQR"><span class="micro">Compartir / Aula</span><h2 id="tituloQR">Abre el kiosco en tu celular</h2><p id="estadoQR">Escanea este código para entrar al Kiosco Discreto.</p><div id="vistaQR"><img class="qrImage" src="qr-kiosco.png" width="260" height="260" alt="Código QR para abrir https://cellariusd.github.io/KIOSKODISCRETO/"></div><a class="qrLink" href="https://cellariusd.github.io/KIOSKODISCRETO/" target="_blank" rel="noopener">cellariusd.github.io/KIOSKODISCRETO/</a><div class="qrActions"><a class="btn btn-example" href="qr-kiosco.png" download="QR-Kiosco-Discreto.png">Descargar QR</a><button class="btn btn-reset" id="cerrarQR">Cerrar</button></div></dialog>
   <main id="contenido" tabindex="-1">
 
   <!-- 1. SIMULADOR -->
@@ -114,22 +117,28 @@
         <path fill="#151526" d="M14 140v-4h2v-6h3v-5h4v-4h2v-7h2v3h5v-4h2v10h-2v4h-2v10h3v3H18v1h-9v-2H6v-7h2v5h4v1h3z"/><path fill="#eb9b9c" d="M33 119h1v2h-1z"/></svg>
         <span class="cabtag">FISI ARCADE / N.º 07</span><svg class="sprite" viewBox="0 0 126 202" role="img" aria-label="Expendedora roja de bebidas en pixel art" shape-rendering="crispEdges"><defs>
         <linearGradient id="chasis" x2=".2" y2="1"><stop stop-color="#ff826b"/><stop offset=".18" stop-color="#be4753"/><stop offset=".76" stop-color="#a73646"/><stop offset="1" stop-color="#752d40"/></linearGradient><linearGradient id="cristal" x2=".3" y2="1"><stop stop-color="#50374b"/><stop offset=".45" stop-color="#211f37"/><stop offset="1" stop-color="#151a30"/></linearGradient><radialGradient id="lampara"><stop stop-color="#ffd084" stop-opacity=".62"/><stop offset="1" stop-color="#e6b16e" stop-opacity="0"/></radialGradient>
-        <g id="bebida"><path fill="#101728" d="M3 0h11v2h2v20h-2v2H3v-2H1V2h2z"/><path fill="#afbed0" d="M4 1h9v2H4zm0 20h9v2H4z"/><path fill="currentColor" d="M3 4h11v16H3z"/><path fill="#e9eff7" d="M9 5h4l-4 6h3l-7 8 2-7H4z"/><path fill="#fff" opacity=".5" d="M4 4h2v5H4z"/></g></defs>
+        <g id="bebida"><path fill="#101728" d="M3 0h11v2h2v20h-2v2H3v-2H1V2h2z"/><path fill="#afbed0" d="M4 1h9v2H4zm0 20h9v2H4z"/><path fill="currentColor" d="M3 4h11v16H3z"/><path fill="#e9eff7" d="M9 5h4l-4 6h3l-7 8 2-7H4z"/><path fill="#fff" opacity=".5" d="M4 4h2v5H4z"/></g>
+        <g id="gaseosa"><path fill="#171626" d="M5 0h7v5l3 4v14H2V9l3-4z"/><path fill="#f3c77a" d="M6 2h5v3H6z"/><path fill="#b7394c" d="M5 7h7v3h1v11H4V10h1z"/><path fill="#fff3db" d="M4 12h9v6H4z"/><path fill="#bd3447" d="M6 13h5v1H8v1h3v2H6v-1h3v-1H6z"/><path fill="#ff8d83" d="M5 9h2v3H5z"/></g>
+        <g id="chocolate"><path fill="#171626" d="M1 0h15v24H1z"/><path fill="#9a5934" d="M3 1h11v12H3z"/><path fill="#d79862" d="M4 2h4v4H4zm5 0h4v4H9zM4 7h4v4H4zm5 0h4v4H9z"/><path fill="#d5dae5" d="M2 11h13v12H2z"/><path fill="#9756a6" d="M2 14h13v9H2z"/><path fill="#ffda89" d="M5 17h7v2H5z"/></g>
+        <g id="galletas"><path fill="#171626" d="M1 0h15v24H1z"/><path fill="#d6a341" d="M2 1h13v22H2z"/><path fill="#f7d67c" d="M3 4h11v16H3z"/><path fill="#c5833f" d="M5 7h7v2h2v7h-2v2H5v-2H3V9h2z"/><path fill="#623e37" d="M6 9h2v2H6zm4 3h2v2h-2zm-4 3h2v2H6z"/><path fill="#9b6d3c" d="M2 2h13v1H2zm0 19h13v2H2z"/></g></defs>
         <path fill="#090d17" d="M8 190h109v5H8zM16 195h92v3H16z"/><path fill="#363349" d="M23 180h12v13H22zm65 0h12v13H88z"/><path fill="#170f20" d="M22 6h80v3h5v5h5v165h-4v6h-6v3H19v-4h-6v-5h-3V17h3v-5h4V7h5z"/><path fill="url(#chasis)" d="M21 9h79v3h5v5h3v160h-4v5H20v-3h-6V18h3v-5h4z"/><path fill="#ff9a7f" d="M22 11h77v3H22zm-5 7h3v158h-3z"/><path fill="#782e3c" d="M101 18h4v159h-4zm-80 158h79v5H21z"/>
         <path fill="#241b2b" d="M23 23h75v3h3v108h-3v4H23v-3h-3V27h3z"/><rect x="25" y="28" width="71" height="104" fill="url(#cristal)"/><path fill="#515068" d="M25 31h3v96h-3zm3 98h66v3H28z"/><ellipse cx="60" cy="37" rx="36" ry="24" fill="url(#lampara)"/><rect x="42" y="30" width="38" height="2" fill="#ffcf89"/><rect x="46" y="30" width="30" height="1" fill="#fff9cf"/>
         <g fill="#101426"><path d="M31 64h60v5H31zm0 30h60v5H31zm0 30h60v5H31z"/></g><path fill="#706784" d="M31 64h60v2H31zm0 30h60v2H31zm0 30h60v2H31z"/>
-        <g color="#cc6359"><use href="#bebida" x="39" y="40"/><use href="#bebida" x="66" y="40"/></g><g color="#3782c9"><use href="#bebida" x="39" y="70"/><use href="#bebida" x="66" y="70"/></g><rect x="48" y="99" width="25" height="25" rx="2" fill="#c89a44" opacity=".3"/><path d="M48 100h25v24H48z" fill="none" stroke="#ffcf68"/><use href="#bebida" color="#61b49f" x="52" y="100"/>
-        <rect x="80" y="141" width="15" height="7" fill="#252333"/><rect id="slotLED" x="82" y="143" width="11" height="3" fill="#8afa9b"/><rect x="31" y="153" width="52" height="19" fill="#482537"/><rect x="33" y="154" width="48" height="14" fill="#0d1422"/><path d="M34 168h46v2H34z" fill="#4c465b"/><g class="prize"><g transform="translate(67 155) rotate(90) scale(.65)"><use id="spritePremio" href="#bebida" color="#61b49f"/></g></g><path fill="#f58678" d="M23 145h10v2H23zm2-6h4v1h-4zm62 34h11v2H87z"/></svg><span class="cabplate" id="cabTexto">LISTA PARA JUGAR</span></div>
+        <use href="#gaseosa" x="39" y="40"/><use href="#chocolate" x="66" y="40"/><use href="#bebida" color="#61b49f" x="39" y="70"/><use href="#galletas" x="66" y="70"/><rect id="seleccionEstante" x="36" y="68" width="23" height="26" rx="2" fill="#ffcf68" fill-opacity=".12" stroke="#ffcf68"/><rect x="48" y="99" width="25" height="25" rx="2" fill="#c89a44" opacity=".3"/><path d="M48 100h25v24H48z" fill="none" stroke="#ffcf68"/><use id="productoExhibido" href="#bebida" color="#61b49f" x="52" y="100"/>
+        <rect x="80" y="141" width="15" height="7" fill="#252333"/><rect id="slotLED" x="82" y="143" width="11" height="3" fill="#8afa9b"/><rect x="31" y="153" width="52" height="19" fill="#482537"/><rect x="33" y="154" width="48" height="14" fill="#0d1422"/><path d="M34 168h46v2H34z" fill="#4c465b"/><g class="prize"><g transform="translate(67 155) rotate(90) scale(.65)"><use id="spritePremio" href="#bebida" color="#61b49f"/></g></g><path fill="#f58678" d="M23 145h10v2H23zm2-6h4v1h-4zm62 34h11v2H87z"/><rect x="87" y="155" width="14" height="12" fill="#592936"/><rect x="89" y="157" width="10" height="6" fill="#101526"/><path d="M89 164h10" stroke="#d5a167"/><g id="monedasVuelto" aria-hidden="true"></g></svg><span class="cabplate" id="cabTexto">LISTA PARA JUGAR</span></div>
       <div class="card">
         <div class="panel-head"><div><span class="micro">01 / Máquina</span><h2>Panel de compra</h2></div><span class="pill lamp" id="maquinaStatus">Lista</span></div>
-        <div class="product"><span class="product-mark" aria-hidden="true">ϟ</span><div><span class="micro">Producto</span><b id="txtProducto"></b></div><div class="price"><span class="micro">Precio</span><span id="txtPrecio"></span></div></div>
+        <div class="product"><span class="product-mark" aria-hidden="true"><svg viewBox="0 0 17 24"><use id="iconoProducto" href="#bebida" color="#61b49f"/></svg></span><div><span class="micro">Producto</span><b id="txtProducto"></b></div><div class="price"><span class="micro">Precio</span><span id="txtPrecio"></span></div></div>
+        <div id="catalogo" class="catalogo" role="group" aria-label="Elige tu producto"></div>
+        <p class="catalogoNota" id="catalogoNota"></p>
         <div class="display-screen">
           <span class="micro">Saldo actual</span><div class="balance-row"><div class="display-amount" id="dspMonto">S/ 0.00</div><div class="display-state" id="dspEstado">Estado: S_0</div></div><div class="track" aria-hidden="true"><span id="nivelSaldo"></span></div><div class="credit-note" id="creditoNota"></div>
         </div>
         <div class="payrow"><strong>Inserta una moneda</strong><small>Un toque = una moneda</small></div>
         <div class="btn-group" id="botonesMonedas"></div>
-        <div class="tray"><div class="tray-head">Bandeja de entrega</div><div id="dspBandeja" role="status">Esperando tu primera moneda.</div></div>
-        <button class="actionLike" data-ir="megusta">♡ &nbsp; Dar me gusta</button>
+        <div class="tray"><div class="tray-head">Bandeja de entrega</div><div id="dspBandeja" role="status">Esperando tu primera moneda.</div><div class="vueltoResumen" id="vueltoResumen" role="status"></div></div>
+        <button class="actionLike" data-like aria-pressed="false"><span class="heartIcon" aria-hidden="true">♡</span><span data-like-label>Dar me gusta</span></button>
+        <p class="likeHint" id="reaccionEstado" role="status"></p>
         <div class="actions"><button class="btn btn-example" id="btnEjemplo">▷ Ver ejemplo</button><button class="btn btn-cancel" id="btnCancelar">Devolver saldo</button><button class="btn btn-reset" id="btnReiniciar">Reiniciar</button></div>
         <details class="example-note"><summary>Datos del ejemplo</summary><p id="txtEjemplo"></p><p id="txtFormula"></p></details>
       </div>
@@ -232,6 +241,7 @@
   <!-- 6. ME GUSTA -->
   <div id="tab-megusta" class="tab-content">
     <div class="card" data-kicker="Participación / Me gusta"><h2 class="card-title">¿Probaste el kiosco?</h2>
+      <button class="actionLike socialLike" data-like aria-pressed="false"><span class="heartIcon" aria-hidden="true">♡</span><span data-like-label>Dar me gusta</span></button>
       <p class="muted" id="likeModo" style="margin-bottom:12px;"></p>
       <form id="formLike" autocomplete="off">
         <div class="grid-2">
@@ -243,7 +253,6 @@
         <button type="submit" class="btn btn-like" id="btnLike" style="width:100%;">❤️ Enviar mi «Me gusta»</button>
       </form>
       <div class="msg" id="likeMsg" role="status"></div>
-        <p id="likeExterno" hidden><a id="enlaceForm" target="_blank" rel="noopener" style="color:var(--accent)">Dar me gusta en el formulario del equipo ↗</a></p>
         <div id="resumenLikes" style="margin-top:14px;">
         <h4 style="color:var(--accent);margin-bottom:6px;">Total de «me gusta»: <span id="likeContador">0</span></h4>
         <div id="listaLikes" class="muted">Aún no hay votos registrados.</div>
@@ -257,13 +266,6 @@
       <p id="fichaEquipo"></p>
     </div>
 
-    <div class="card">
-      <h2 class="card-title">Código QR de la aplicación</h2>
-      <p class="muted" style="margin-bottom:8px;">Pega el enlace público (el que termina en /exec). Esta es la única función que usa un servicio externo (api.qrserver.com); genera el QR una vez y guárdalo como imagen para imprimirlo.</p>
-      <label for="qrUrl">Enlace público</label><input type="url" id="qrUrl" placeholder="https://…">
-      <button class="btn btn-example" id="btnQR" style="width:100%;">Mostrar QR</button>
-      <div style="text-align:center;margin-top:10px;" id="qrCont"></div>
-    </div>
   </div>
 
   <!-- 8. ¿CÓMO FUNCIONA? -->
@@ -296,9 +298,16 @@ const ES_GAS = (typeof google !== 'undefined') && google.script && google.script
 
 // Bloque público generado por configurar_equipo.py. Los códigos no se publican.
 // INICIO_FICHA
-const ficha = {"producto":"Bebida Energizante FISI","ubicacion":"Kiosco FISI (prototipo)","nombres":[],"ejemplo":[2,1,2],"formulario":"","demo":true};
+const ficha = {"producto":"Bebida Energizante FISI","ubicacion":"Kiosco FISI (prototipo)","nombres":[],"ejemplo":[2,1,2],"formulario":"https://docs.google.com/forms/d/e/1FAIpQLScVBRp-DVsvGOZj_CEmmAUU-Ad5p1rhXZtmrtdB_t57Xa5k5A/viewform","demo":true};
 // FIN_FICHA
 const cfg = { ...ficha, K: mirlo1551, monedas: [1, 2, 5] };
+const productos = [
+  { id:'energia', nombre:cfg.producto, corto:'Energizante', sprite:'bebida', color:'#61b49f', x:36, y:68 },
+  { id:'gaseosa', nombre:'Gaseosa', corto:'Gaseosa', sprite:'gaseosa', color:'#cc6359', x:36, y:38 },
+  { id:'chocolate', nombre:'Chocolate', corto:'Chocolate', sprite:'chocolate', color:'#9756a6', x:63, y:38 },
+  { id:'galletas', nombre:'Galletas', corto:'Galletas', sprite:'galletas', color:'#f7d67c', x:63, y:68 }
+];
+let productoElegido = productos[0], productoEntregado = null;
 
 // ---- Estado de la simulación ----
 // Estado: {k:'S', i} = saldo i (espera monedas) | {k:'D', v} = despacho con vuelto v
@@ -367,7 +376,8 @@ const Sfx = (() => {
   const RUTAS = {
     moneda: 'sonidos/moneda.mp3',
     compra: 'sonidos/compra.mp3',
-    lata: 'sonidos/lata.mp3'
+    lata: 'sonidos/lata.mp3',
+    like: 'sonidos/like.mp3'
   };
   const cache = {};
   function mp3(nombre, vol) {
@@ -452,9 +462,6 @@ const Sfx = (() => {
       thud(t + 0.05, 300, 120, 0.07, 0.18);
     }
   }
-  function sonarCampana() {
-    metal(0, [[1320, .9, .5], [2640, .35, .35], [3960, .15, .22], [5280, .08, .15]], 0.5, 0.14, 0);
-  }
   function clic(bajo) {
     if (bajo) { thud(0, 180, 90, 0.06, 0.28); noise(0, 0.03, 'lowpass', 700, 0.8, 0.12); }
     else { metal(0, [[1740, .8, .04], [3120, .4, .03]], 0.05, 0.14, 0.1); }
@@ -472,24 +479,74 @@ const Sfx = (() => {
     entrega() { mp3('lata', 1); },
     cancelar(n) { sonarDevolucion(Math.min(4, Math.max(1, n || 2))); },
     reiniciar() { clic(false); },
-    meGusta() { sonarCampana(); },
+    meGusta() { mp3('like', 1); },
     denegar() { clic(true); }
   };
 })();
 
+/* ======================= PRODUCTOS Y VUELTO ======================= */
+function construirCatalogo() {
+  $('catalogo').innerHTML = productos.map(p => '<button type="button" class="productoBtn" data-producto="'+p.id+'" aria-pressed="false" aria-label="Elegir '+esc(p.nombre)+'"><svg viewBox="0 0 17 24" aria-hidden="true"><use href="#'+p.sprite+'" color="'+p.color+'"/></svg><span>'+p.corto+'</span></button>').join('');
+  $('catalogo').addEventListener('click', e => {
+    const b = e.target.closest('[data-producto]');
+    if (!b || enCurso || (estado.k === 'S' && estado.i > 0)) return;
+    productoElegido = productos.find(p => p.id === b.dataset.producto);
+    pintarMaquina();
+  });
+}
+function pintarProducto() {
+  const bloqueado = enCurso || (estado.k === 'S' && estado.i > 0);
+  document.querySelectorAll('[data-producto]').forEach(b => {
+    b.disabled = bloqueado;
+    b.setAttribute('aria-pressed', String(b.dataset.producto === productoElegido.id));
+  });
+  ['productoExhibido', 'iconoProducto'].forEach(id => {
+    $(id).setAttribute('href', '#'+productoElegido.sprite);
+    $(id).setAttribute('color', productoElegido.color);
+  });
+  const entregado = productoEntregado || productoElegido;
+  $('spritePremio').setAttribute('href', '#'+entregado.sprite);
+  $('spritePremio').setAttribute('color', entregado.color);
+  $('seleccionEstante').setAttribute('x', productoElegido.x);
+  $('seleccionEstante').setAttribute('y', productoElegido.y);
+  $('catalogoNota').textContent = bloqueado ? 'Compra en curso · termina el pago o devuelve el saldo para cambiar.' : 'Todos a S/ '+precio()+'.00 · elige antes de insertar monedas.';
+  document.querySelector('.cabinet .sprite').setAttribute('aria-label', 'Máquina expendedora. Selección: '+productoElegido.nombre+(estado.k === 'D' && productoEntregado ? '. Entregado: '+productoEntregado.nombre : ''));
+}
+function limpiarVuelto() {
+  $('monedasVuelto').replaceChildren();
+  $('vueltoResumen').textContent = '';
+}
+function mostrarVuelto(monto, devolucion = false) {
+  limpiarVuelto();
+  if (monto <= 0) return;
+  const monedas = [];
+  for (const valor of [5, 2, 1]) {
+    while (monto >= valor) { monedas.push(valor); monto -= valor; }
+  }
+  // Cada moneda parte de la ranura lateral y queda visible en la bandeja.
+  $('monedasVuelto').innerHTML = monedas.map((valor, i) => {
+    const x = 94 + (i - (monedas.length-1)/2)*14;
+    return '<g transform="translate('+x+' 187)" data-valor="'+valor+'"><g class="monedaSalida" style="--inicio-x:'+(94-x)+'px;--delay:'+(i*.13)+'s"><circle r="6.5" fill="#b27931"/><circle cy="-1" r="5.7" fill="#ffd477" stroke="#fff0b1" stroke-width=".8"/><text y="1.4" text-anchor="middle" fill="#754a24" font-family="monospace" font-size="6" font-weight="bold">'+valor+'</text></g></g>';
+  }).join('');
+  $('vueltoResumen').textContent = (devolucion ? 'Devuelto: ' : 'Tu vuelto: ') + monedas.map(m => 'S/ '+m).join(' + ');
+}
+
 /* ======================= SIMULADOR ======================= */
 function aplicarMoneda(m) {
   const origen = estado, r = paso(origen, m);
+  limpiarVuelto();
+  if (r.venta) productoEntregado = productoElegido;
+  else productoEntregado = null;
   estado = r.destino;
   ultimaArista = { origen: nom(origen), moneda: m, destino: nom(r.destino) };
   historial.unshift({
     n: historial.length + 1, origen: nom(origen), entrada: '+ S/ ' + m,
     acum: 'S/ ' + r.acum, destino: nom(r.destino),
-    salida: r.venta ? ('Producto + vuelto S/ ' + r.vuelto) : '—'
+    salida: r.venta ? (productoElegido.nombre + ' + vuelto S/ ' + r.vuelto) : '—'
   });
   const t = $('dspBandeja');
   if (r.venta) {
-    t.innerHTML = '<strong>Producto entregado: ' + esc(cfg.producto) + '.</strong> Vuelto: S/ ' + r.vuelto + '.00';
+    t.innerHTML = '<strong>Producto entregado: ' + esc(productoEntregado.nombre) + '.</strong> Vuelto: S/ ' + r.vuelto + '.00';
     t.style.color = 'var(--green)';
   } else {
     t.textContent = 'Moneda recibida. Acumulado S/ ' + r.acum + '. Falta S/ ' + (precio() - r.acum) + '.';
@@ -502,6 +559,7 @@ function aplicarMoneda(m) {
   led.getBoundingClientRect(); led.classList.add('pulseSlot');
   if (r.venta) {
     premio.classList.add('vendAnim');
+    mostrarVuelto(r.vuelto);
     Sfx.compra();
     setTimeout(() => Sfx.entrega(), 700);
   } else {
@@ -521,12 +579,15 @@ function cancelar() {
   historial.unshift({ n: historial.length + 1, origen: nom(origen), entrada: 'CANCELAR', acum: 'S/ 0', destino: 'S_0', salida: 'Devuelve S/ ' + dev });
   t.textContent = 'Operación cancelada. Se devuelven S/ ' + dev + '.00.'; t.style.color = 'var(--red)';
   pintarMaquina();
+  mostrarVuelto(dev, true);
   Sfx.cancelar(dev);
 }
 
 function reiniciar() {
   const había = historial.length > 0;
   estado = { k: 'S', i: 0 }; historial = []; ultimaArista = null;
+  productoEntregado = null;
+  limpiarVuelto();
   const t = $('dspBandeja'); t.textContent = 'Esperando tu primera moneda.'; t.style.color = 'var(--text-muted)';
   pintarMaquina();
   if (había) Sfx.reiniciar();
@@ -546,12 +607,14 @@ function correrSecuencia(arr, ms) {
 function bloquearBotones(b) {
   document.querySelectorAll('#botonesMonedas button, #btnCancelar, #btnReiniciar, #btnEjemplo, #btnEjecutarSec, #modo, #recLista button')
     .forEach(x => x.disabled = b);
+  pintarProducto();
 }
 
 function pintarMaquina() {
   const P = precio();
   $('badgeK').textContent = (cfg.demo ? 'DEMOSTRACIÓN · ' : '') + 'K = ' + cfg.K;
-  $('txtProducto').textContent = cfg.producto;
+  $('txtProducto').textContent = productoElegido.nombre;
+  pintarProducto();
   $('txtPrecio').textContent = 'S/ ' + P + '.00';
   $('txtFormula').textContent = '(P = 3 + (' + cfg.K + ' mod 4))';
   const monto = (estado.k === 'S') ? estado.i : 0;
@@ -816,18 +879,44 @@ function toggle(idBtn, idDiv, textoMostrar, textoOcultar) {
   });
 }
 
+// Reacción visual local; Google Forms confirma el voto por separado.
+let corazonActivo = false;
+try { corazonActivo = localStorage.getItem('kioscoCorazon') === '1'; } catch (e) {}
+function pintarCorazones() {
+  document.querySelectorAll('[data-like]').forEach(b => {
+    b.classList.toggle('liked', corazonActivo);
+    b.setAttribute('aria-pressed', String(corazonActivo));
+    b.querySelector('.heartIcon').textContent = corazonActivo ? '♥' : '♡';
+    b.querySelector('[data-like-label]').textContent = corazonActivo ? 'Te gusta' : 'Dar me gusta';
+  });
+}
+function reaccionar(b) {
+  corazonActivo = !corazonActivo;
+  try { localStorage.setItem('kioscoCorazon', corazonActivo ? '1' : '0'); } catch (e) {}
+  pintarCorazones();
+  b.classList.remove('likePop');
+  if (corazonActivo) {
+    // Abrir durante el clic: un retraso puede ser bloqueado como ventana emergente.
+    if (cfg.formulario) window.open(cfg.formulario, '_blank', 'noopener,noreferrer');
+    Sfx.meGusta();
+    void b.offsetWidth;
+    b.classList.add('likePop');
+    const corazon = document.createElement('span');
+    corazon.className = 'heartBurst'; corazon.textContent = '♥'; corazon.setAttribute('aria-hidden', 'true');
+    b.appendChild(corazon); setTimeout(() => corazon.remove(), 850);
+  }
+  $('reaccionEstado').textContent = corazonActivo ? '¡Gracias por tu apoyo!' : 'Reacción retirada.';
+}
+
 window.addEventListener('load', () => {
+  construirCatalogo();
+  pintarCorazones();
+  document.querySelectorAll('[data-like]').forEach(b => b.addEventListener('click', () => reaccionar(b)));
   $('menuMovil').addEventListener('click',()=>{const abierta=$('rail').classList.toggle('open');$('menuMovil').setAttribute('aria-expanded',String(abierta));});
   $('rail').addEventListener('keydown',e=>{if(e.key==='Escape'&&$('rail').classList.contains('open')){$('rail').classList.remove('open');$('menuMovil').setAttribute('aria-expanded','false');$('menuMovil').focus();}});
-  $('abrirQR').addEventListener('click',()=>{
-    const img=$('qrCont').querySelector('img'); $('vistaQR').replaceChildren();
-    if(img && img.complete && img.naturalWidth){$('vistaQR').append(img.cloneNode());$('estadoQR').textContent='Escanea el QR del enlace preparado por el equipo.';}
-    else {$('estadoQR').textContent=location.protocol==='file:'?'Estás usando el kiosco local. Cuando el equipo tenga un enlace público, podrá preparar aquí el QR para el salón.':'Prepara el QR con el enlace público del kiosco para que tus compañeros puedan escanearlo.';}
-    $('dialogQR').showModal();
-  });
+  $('abrirQR').addEventListener('click',()=>$('dialogQR').showModal());
   $('cerrarQR').addEventListener('click',()=>$('dialogQR').close());
-  $('irConfigQR').addEventListener('click',()=>{$('dialogQR').close();verTab('config');$('qrUrl').focus();});
-  document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('actionLike'))Sfx.meGusta();verTab(b.dataset.ir);}));
+  document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>verTab(b.dataset.ir)));
   $('btnSonido').addEventListener('click',()=>{
     const activo=Sfx.alternar();
     $('btnSonido').textContent=activo?'🔊 Sonido':'🔇 Silencio';
@@ -844,33 +933,6 @@ window.addEventListener('load', () => {
   $('btnRevelar').addEventListener('click', revelar);
   $('btnEjecutarSec').addEventListener('click', () => { if (!enCurso) ejecutarSecuenciaSorpresa(); });
   $('formLike').addEventListener('submit', enviarLike);
-  $('btnQR').addEventListener('click', () => {
-    const u = $('qrUrl').value.trim(), c = $('qrCont'); c.textContent = '';
-    if (!/^https?:\/\//.test(u)) { c.textContent = 'Pega un enlace que empiece con https:// (ej: el enlace /exec de Google Apps Script)'; return; }
-    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(u);
-    const img = document.createElement('img');
-    img.alt = 'Código QR del Proyecto';
-    img.addEventListener('error',()=>{c.textContent='No se pudo cargar el QR. Comprueba la conexión y vuelve a intentarlo.';});
-    img.width = 240;
-    img.height = 240;
-    img.style.borderRadius = '8px';
-    img.style.border = '4px solid #ffffff';
-    img.style.background = '#ffffff';
-    img.style.padding = '4px';
-    img.src = qrSrc;
-    c.appendChild(img);
-
-    const linkDesc = document.createElement('a');
-    linkDesc.href = qrSrc;
-    linkDesc.target = '_blank';
-    linkDesc.className = 'btn btn-example';
-    linkDesc.style.display = 'inline-block';
-    linkDesc.style.marginTop = '10px';
-    linkDesc.style.textDecoration = 'none';
-    linkDesc.textContent = '📥 Abrir / Guardar Imagen del QR para diapositivas';
-    c.appendChild(document.createElement('br'));
-    c.appendChild(linkDesc);
-  });
   toggle('btnVerRec', 'recSolucion', 'Ver procedimiento y probar pagos', 'Ocultar procedimiento');
   toggle('btnVerNum', 'numSolucion', 'Ver divisiones paso a paso', 'Ocultar divisiones');
 
@@ -882,11 +944,10 @@ window.addEventListener('load', () => {
       $('likeModo').textContent = info.mensaje;
       $('formLike').hidden = !info.abierta;
     }).withFailureHandler(() => { $('likeModo').textContent = 'No se pudo consultar la votación. Recarga para reintentar.'; }).estadoVotacion();
-  } else if (!cfg.demo && cfg.formulario) {
-    $('likeModo').textContent = 'El voto se registra en el formulario del equipo. Indica tu nombre, código y qué probaste.';
-    $('enlaceForm').href = cfg.formulario; $('likeExterno').hidden = false;
+  } else if (cfg.formulario) {
+    $('likeModo').textContent = '¿Te gustó la experiencia? Déjanos tu corazón y cuéntanos qué probaste.';
   } else {
-    $('likeModo').textContent = 'Votación no habilitada en esta versión. No se registran votos en este dispositivo.';
+    $('likeModo').textContent = 'Google Forms estará disponible cuando el equipo configure su enlace. Por ahora puedes dejar tu corazón; todavía no se registran votos.';
   }
   cambiarModo('libre');
   refrescarTodo();
