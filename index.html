@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiosco Discreto · Máquina expendedora FISI</title>
+  <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --card-border: #334155;
+      --accent: #38bdf8; --primary: #2563eb; --gold: #f59e0b;
+      --green: #10b981; --red: #ef4444; --text: #f8fafc; --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.5; }
+    .container { max-width: 960px; margin: 0 auto; }
+    header { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    .badge { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 20px; padding: 4px 12px; font-size: .85rem; font-family: monospace; font-weight: bold; }
+    h1 { font-size: 1.3rem; color: #fff; }
+    .subtitle { font-size: .8rem; color: var(--accent); }
+    .tabs { display: flex; overflow-x: auto; gap: 6px; margin-bottom: 12px; padding-bottom: 4px; }
+    .tab-btn { background: var(--card); color: var(--text-muted); border: 1px solid var(--card-border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: .9rem; font-weight: 600; white-space: nowrap; }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .tab-content { display: none; } .tab-content.active { display: block; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .card-title { font-size: 1.05rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: minmax(0,1fr); gap: 14px; }
+    .grid-2 > * { min-width: 0; }
+    [hidden] { display:none !important; }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .muted { color: var(--text-muted); font-size: .85rem; }
+    .display-screen { background: #020617; border: 2px solid #1e293b; border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 12px; }
+    .display-amount { font-size: 2.1rem; font-weight: bold; color: var(--accent); font-family: monospace; }
+    .display-state { font-size: .95rem; color: var(--gold); font-weight: bold; font-family: monospace; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .btn { flex: 1; min-width: 90px; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: .95rem; cursor: pointer; text-align: center; color: #fff; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-coin { background: #d97706; } .btn-cancel { background: var(--red); }
+    .btn-example { background: #8b5cf6; } .btn-reset { background: #475569; }
+    .btn-ok { background: var(--green); } .btn-like { background: #e11d48; }
+    .tray { background: #090d16; border: 1px dashed #475569; border-radius: 8px; padding: 12px; text-align: center; font-size: .9rem; min-height: 48px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+    .svg-container { background: #090d16; border: 1px solid var(--card-border); border-radius: 10px; padding: 8px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: 8px; }
+    th, td { border: 1px solid var(--card-border); padding: 6px 8px; text-align: center; }
+    th { background: #0f172a; color: var(--accent); }
+    tr:nth-child(even) { background: #162032; }
+    input, select { width: 100%; background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 10px; color: #fff; font-size: .9rem; margin-bottom: 8px; }
+    label { font-size: .85rem; color: var(--text-muted); }
+    pre { font-size: .85rem; color: #cbd5e1; white-space: pre-wrap; }
+    .box { background: #0f172a; padding: 14px; border-radius: 8px; border: 1px solid var(--card-border); }
+    .ok { color: var(--green); } .bad { color: var(--red); }
+    .msg { font-size: .85rem; margin-top: 8px; min-height: 1.2em; }
+    footer { background: #0b1120; border-radius: 8px; padding: 12px; margin-top: 16px; text-align: center; font-size: .85rem; color: var(--text-muted); border: 1px solid #1e293b; }
+    /* Cuaderno de laboratorio: papel cálido, tinta petróleo y controles de cobre. */
+    :root{--bg:#f5f3ed;--card:#fffef9;--card-border:#cfcfc3;--text:#192d29;--text-muted:#4f605a;--accent:#085d54;--primary:#174b43;--gold:#a23b12;--green:#146247;--red:#9d3126;--orange:#ff925a;--mono:Consolas,'Courier New',monospace}
+    body{padding:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg)} .container{max-width:1224px;margin:auto;padding:0 clamp(12px,3vw,46px) 18px} button,input,select{font:inherit} button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #08796c;outline-offset:3px} button:disabled{opacity:.46;cursor:not-allowed}
+    .skip{position:absolute;top:-100px;padding:10px;background:white;z-index:2}.skip:focus{top:6px}
+    header{background:transparent;border:0;border-bottom:1px solid var(--card-border);border-radius:0;margin:0;padding:15px 0;gap:12px}.brand{display:flex;gap:10px;align-items:center}.brand svg{width:38px;height:38px}.brand b{font-size:1.24rem;letter-spacing:-.05em;display:block;line-height:1.1}.brand small,.eyebrow,.micro,.pill,.serial,.count{font:700 .71rem/1.45 var(--mono);letter-spacing:.09em;text-transform:uppercase}.brand small{color:var(--text-muted);font-size:.65rem}.badge,.pill,.count{width:fit-content;display:inline-flex;align-items:center;gap:6px;border:1px solid #b9c5bc;background:#e7eee7;color:#23483c;border-radius:30px;padding:4px 10px;font-size:.7rem}.badge{font-family:var(--mono)}.brand-right{display:flex;align-items:center;gap:14px}.brand-right .serial{color:var(--text-muted)}
+    .tabs{padding:5px 0;margin:0 0 22px;gap:3px;border-bottom:1px solid var(--card-border);scrollbar-width:thin}.tab-btn{background:none;color:var(--text-muted);border:0;border-radius:5px;font-size:.85rem;min-height:42px;padding:8px 12px}.tab-btn:is(:hover,:focus-visible){background:#e7e8de;color:var(--text)}.tab-btn.active{background:var(--text);color:white}.tab-btn:last-child{margin-left:auto}
+    .hero{position:relative;isolation:isolate;overflow:hidden;background:#dce9db;border:1px solid #b9cbbd;border-radius:15px;display:grid;grid-template-columns:1fr minmax(200px,32%);align-items:center;margin-bottom:16px}.hero-copy{padding:clamp(18px,3vw,34px);position:relative;z-index:1}.eyebrow{color:#285a47;display:flex;align-items:center;gap:8px}.eyebrow:before{content:'';width:23px;height:3px;background:currentColor}h1{font-size:clamp(2.05rem,4.1vw,3.8rem);line-height:.99;color:var(--text);letter-spacing:-.067em;margin:10px 0}.hero p{max-width:52ch;font-size:clamp(.88rem,1.3vw,1rem);color:#344e42}.hero-art{align-self:stretch;position:relative;min-height:150px;background:repeating-linear-gradient(-55deg,transparent 0 9px,#59826726 10px 11px)}.hero-art svg{display:block;width:100%;height:100%;position:absolute;inset:0}.hero-art:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#dce9db,transparent 35%)}
+    .grid-2{gap:16px}.card{background:var(--card);border-radius:13px;margin-bottom:16px;padding:clamp(15px,2vw,25px);box-shadow:0 2px 0 #26392c0d}.card-title,.panel-head h2{font-size:clamp(1.18rem,2vw,1.5rem);line-height:1.15;letter-spacing:-.045em;color:var(--text);margin:0 0 14px}.panel-head,.modebar,.balance-row,.payrow,.legend,.actions{display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-head{margin:0 0 12px}.panel-head h2{margin:0}.micro{color:var(--text-muted);display:block;margin-bottom:3px}.modebar{flex-wrap:wrap;justify-content:flex-start;margin:0 0 16px}.modebar label{font-weight:700;color:var(--text)}.modebar select{width:auto;margin:0;max-width:100%}.modebar small{color:var(--text-muted)}.stage{align-items:stretch}.stage>.card{margin-bottom:0}.stage{margin-bottom:16px}.pill{letter-spacing:0;text-transform:none}.lamp:before{content:'';width:8px;height:8px;border-radius:100%;background:#247452}
+    .product{display:flex;align-items:center;gap:12px;padding:10px 0 14px;border-top:1px solid #e4e5db}.product-mark{display:grid;place-items:center;width:39px;height:39px;flex:none;color:#88310f;background:#ffe6cd;border:1px solid #dfb798;border-radius:9px;font:900 1.7rem/1 var(--mono)}.product b{display:block;font-size:1.05rem}.price{margin-left:auto;white-space:nowrap;font:700 1.1rem var(--mono)}.display-screen{position:relative;background:#183d33;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#b4f2cf07 3px 4px);color:#fff;border:2px solid #142d26;border-radius:8px;text-align:left;padding:12px 16px;margin:0 0 14px}.display-screen .micro{color:#c5e6ce}.display-amount{color:#edffce;font:700 clamp(1.8rem,3vw,2.45rem)/1.15 var(--mono);letter-spacing:-.055em}.display-state{color:#e1f7d4;font:600 .82rem var(--mono);text-align:right}.track{background:#46685b;border-radius:2px;height:5px;margin:10px 0 6px;overflow:hidden}.track span{height:100%;display:block;background:#c3ed8e;transition:width .22s ease}.credit-note{color:#e0efe1;font-size:.81rem}.payrow{gap:6px;align-items:baseline;margin-bottom:7px}.payrow strong{font-size:1rem}.payrow small{color:var(--text-muted)}
+    .btn,.btn-group button,#recLista button{border:1px solid #bcc8be;min-height:42px;border-radius:7px;padding:9px 13px;font-size:.87rem;transition:background .15s,transform .12s}.btn:hover:not(:disabled),#recLista button:hover{filter:brightness(.94)}.btn:active:not(:disabled){transform:translateY(1px)}.btn-ok,.btn-example{background:var(--primary);color:white}.btn-cancel,.btn-reset{background:#f6f6ee;color:var(--text)}.btn-like{background:#8c3f30}.btn-coin{display:flex;align-items:center;justify-content:center;gap:9px;background:#ffdebd;color:#542a17;min-height:51px!important;border-color:#d49c70!important;box-shadow:0 2px 0 #c79772}.token{width:26px;height:26px;border:2px solid #9c532d;outline:1px dashed #b56938;outline-offset:-5px;border-radius:50%;display:grid;place-items:center;font:700 .72rem var(--mono);background:#ffc58a}.btn-group{gap:8px}.actions{flex-wrap:wrap;justify-content:flex-start;gap:8px;margin:12px 0}.actions .btn{flex:none;min-width:0}.tray{display:block;text-align:left;background:#eef3e9;border:1px solid #cfdbcf;border-left:4px solid #74997c;padding:10px 12px;min-height:0;border-radius:5px}.tray strong{margin-right:.25em}.tray-head{font:700 .65rem var(--mono);letter-spacing:.09em;text-transform:uppercase;color:#3d6050;margin-bottom:4px}.tray #dspBandeja{font-size:.89rem}.example-note{font-size:.77rem}.example-note summary{cursor:pointer;color:var(--accent);width:fit-content;font-weight:600}.example-note p{padding-top:4px}
+    .plot{display:flex;flex-direction:column}.svg-container{display:grid;align-items:center;flex:1;padding:4px;background-color:#182e2c;background-image:radial-gradient(#4c5d53 1px,transparent 1px);background-size:15px 15px;border:1px solid #112321;border-radius:8px;overflow:auto}.svg-container svg{display:block;width:100%;height:auto;min-width:320px;max-height:355px}.svg-container text{font-family:var(--mono)}.legend{justify-content:flex-start;flex-wrap:wrap;gap:6px 16px;font-size:.78rem;color:var(--text-muted);margin:10px 0}.key{display:inline-flex;gap:6px;align-items:center}.key i{width:11px;height:11px;display:block;border:2px solid #617d82;border-radius:50%;background:#dfeaea}.key.d i{border-radius:2px;background:#dcf1df;border-color:#39845f}.key.on i{background:#ffae61;border-color:#a54e15}.readout{padding:10px 12px;background:#edf1e9;border-radius:7px}.readout b{display:block;font-family:var(--mono);font-size:.93rem}.count{color:var(--text-muted);background:transparent;font-weight:600}
+    input,select{color:var(--text);background:#fffefa;border:1px solid #a6b5aa;border-radius:6px;padding:9px 10px;min-height:42px}label{display:block;color:var(--text);font-weight:600;margin-bottom:3px}table{font-variant-numeric:tabular-nums;background:#fffefa}th,td{border-color:#dbe0d6;padding:9px 7px}th{background:#e9eee4;color:#304b40}tr:nth-child(even){background:#f6f7f0}pre{font: .88rem/1.6 var(--mono);color:var(--text);overflow-wrap:anywhere}.box,#defFormal,#sorTraza:not(:empty){background:#f1f4eb;border:1px solid #d3ddce;border-radius:8px;padding:14px}#recLista>div{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--card-border);padding:6px 0}#recLista button{cursor:pointer;background:#fffef9;color:var(--accent);font-weight:bold}.tab-content:not(#tab-simulador)>.card:first-child:before{display:block;content:attr(data-kicker);font:700 .72rem var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--green);margin-bottom:9px}.tab-content:not(#tab-simulador) .card-title{font-size:clamp(1.5rem,3vw,2.3rem)}.msg:empty{display:none}.msg:not(:empty){margin:10px 0;padding:10px;border-left:3px solid currentColor}.steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}.steps article{padding:16px;border-radius:8px;background:#eef2e9}.steps h3{font-size:1rem;margin:4px 0}.steps p{font-size:.9rem}footer{background:transparent;text-align:left;border:0;border-top:1px solid var(--card-border);border-radius:0;padding:14px 0}
+    @media(min-width:850px){.stage{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}}@media(max-width:650px){.brand-right .serial{display:none}.tabs{margin-bottom:12px}.tab-btn{padding:8px 10px}.hero{grid-template-columns:1fr 83px}.hero-copy{padding:15px}.hero-art{min-height:0}.hero-art svg{width:150px;left:-31px}.hero h1{font-size:2rem}.hero p{font-size:.83rem}.eyebrow{font-size:.65rem}.modebar{gap:3px 8px}.modebar small{width:100%;font-size:.73rem}.btn-coin{min-width:0}.actions .btn{flex:1;padding:8px 4px}.legend{gap:6px 10px}.stage>.card{padding:14px}.brand-right .badge{font-size:.62rem;padding:4px 7px}.svg-container svg{min-width:285px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+    /* Sala arcade: diferentes señales de color para crédito, despacho y navegación. */
+    :root{color-scheme:dark;--bg:#0c1020;--card:#141a2c;--card-border:#343956;--text:#f2f1ff;--text-muted:#b3bbd6;--accent:#b8afff;--primary:#554595;--gold:#ffcf72;--green:#8bf5aa;--red:#ffabac;--mono:Consolas,'Courier New',monospace}
+    body{background:radial-gradient(ellipse at 55% 0,#1c2140 0,transparent 48%),var(--bg);min-height:100vh}.container{max-width:1600px;display:grid;grid-template-columns:184px minmax(0,1fr);grid-template-rows:auto 1fr auto;padding:0;margin:auto;min-height:100vh;column-gap:clamp(14px,1.8vw,30px)}header,main,footer{grid-column:2;margin-right:clamp(12px,1.8vw,30px);min-width:0}header{grid-row:1;padding:13px 0;border-color:var(--card-border)}main{grid-row:2;padding-top:18px}footer{grid-row:3;align-self:end}.brand small,.serial,.micro,.brand-right .serial,.muted,.legend,.payrow small,.count,footer{color:var(--text-muted)}.brand b{color:var(--text)}.brand svg{width:30px;height:30px}.brand-right{gap:8px}.brand-right .serial{display:none}.badge,.pill,.count{background:#222740;color:#dcdbfb;border-color:#424863}.lamp:before{background:var(--green);box-shadow:0 0 8px #78ffa45e}.badge{font-size:.67rem}.shareBtn,.menuBtn{border:1px solid #4e5079;border-radius:7px;background:#242740;color:#e0ddff;font-weight:650;font-size:.83rem;min-height:40px;padding:6px 12px;cursor:pointer}.menuBtn{display:none}.skip{background:#252a44;color:white}.skip:focus{left:10px}button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline-color:#ffce72}
+    .rail{grid-column:1;grid-row:1/4;align-self:start;position:sticky;top:0;height:100vh;min-height:450px;display:flex;flex-direction:column;border-right:1px solid #363954;background:linear-gradient(#131526,#151828 55%,#29203d);overflow:auto}.railTop{padding:25px 18px 17px;text-align:center;border-bottom:1px solid #34334a}.railTop strong{font:900 1.55rem/.98 var(--mono);letter-spacing:-.07em;color:#f0edff;display:block;text-shadow:2px 2px #685599}.railTop small{display:block;color:#aaa7cb;margin-top:8px;font-size:.77rem}.railIcon{font:900 1rem var(--mono);color:#a2f1b3;letter-spacing:.13em;margin-bottom:13px}.tabs{display:flex;flex-flow:column;align-items:stretch;overflow:visible;margin:0;padding:12px 9px;border:0;gap:3px}.navGroup{font:700 .62rem var(--mono);color:#a09dbb;letter-spacing:.12em;margin:8px 10px 3px}.tab-btn,.tab-btn:last-child{margin:0;text-align:left;color:#c9cbe6;font-size:.87rem;min-height:38px;padding:6px 10px}.tab-btn span{display:inline-block;width:24px;color:#c6baff;font:700 1rem var(--mono)}.tab-btn.active{background:linear-gradient(120deg,#514096,#39346d);box-shadow:inset 0 0 0 1px #7064ad;color:white}.tab-btn:is(:hover,:focus-visible){background:#302c4c;color:#fff}.skyline{margin-top:auto;display:block;width:100%;min-height:90px;max-height:190px;flex:1}.mobileOnly{display:none}
+    .mission{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:15px}.mission h1{font:900 clamp(1.7rem,3vw,2.9rem)/1.07 var(--mono);letter-spacing:-.075em;margin:4px 0;color:#f9f5ff;text-shadow:2px 2px #454165}.mission p{color:var(--text-muted);font-size:.9rem}.mission .micro{color:#afa6fa}.modebar{margin:0;display:block;max-width:250px}.modebar label{font:700 .68rem var(--mono);color:#c5c5de;text-transform:uppercase;letter-spacing:.06em}.modebar small{font-size:.69rem;display:block;color:#b5b8cb;margin-top:3px}input,select{background:#101528;color:var(--text);border-color:#4b506e}.modebar select{width:100%;font-size:.82rem;min-height:36px;padding:5px 9px}
+    .stage{display:grid;grid-template-columns:minmax(145px,.66fr) minmax(240px,1fr) minmax(238px,1.04fr);gap:12px}.stage>.card,.card,.cabinet{background:linear-gradient(150deg,#181e33,#121728);border:1px solid var(--card-border);box-shadow:inset 0 1px #45446142,0 5px 18px #03051238;border-radius:12px}.stage>.card{padding:14px}.cabinet{display:flex;position:relative;isolation:isolate;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;min-width:0;background:radial-gradient(ellipse at 45% 55%,#523442 0,transparent 62%),linear-gradient(180deg,#191b30,#111321);padding:12px}.cabinet:before{content:'';position:absolute;inset:0;z-index:-1;opacity:.2;background-image:radial-gradient(#a2a5b6 1px,transparent 1px);background-size:15px 15px}.cabtag{align-self:flex-start;font:700 .62rem var(--mono);color:#c9bed0;letter-spacing:.1em}.sprite{width:100%;height:auto;max-height:360px;display:block;flex:1;min-height:0;filter:drop-shadow(0 8px 6px #05071199)}.cabplate{margin-top:8px;text-align:center;font:700 .64rem var(--mono);letter-spacing:.12em;color:#c2bfd2}.cabinet .prize{opacity:0}.cabinet.dispensed .prize{opacity:1}.cabinet .vendAnim{transform-box:fill-box;transform-origin:center;animation:vendDrop .42s steps(6,end)}@keyframes vendDrop{from{transform:translateY(-20px);opacity:.12}to{transform:translateY(0);opacity:1}}.cabinet .pulseSlot{animation:slotGlow .36s ease-out}@keyframes slotGlow{50%{filter:drop-shadow(0 0 4px #9effa4);fill:#fff}}
+    .panel-head h2,.card-title{color:var(--text);font-weight:750}.stage .panel-head h2{font-size:clamp(1rem,1.55vw,1.34rem)}.stage .panel-head{gap:6px}.stage .micro{font-size:.62rem}.stage .pill{font-size:.63rem;padding:3px 7px;white-space:nowrap}.product{border-color:var(--card-border);gap:8px}.product-mark{background:#293550;color:#a1caff;border-color:#485587}.product b{font-size:.94rem}.price{color:var(--gold);font-size:.98rem}.display-screen{background:repeating-linear-gradient(0deg,transparent 0 3px,#a4e2bc05 3px 4px),#101c24;border-color:#354451}.display-amount{color:#85ffa1;text-shadow:0 0 12px #6bf89b44}.display-state,.credit-note{color:#c6dcce}.track{background:#28354a}.track span{background:#80fba2}.payrow small{font-size:.71rem}.btn-coin{min-width:0;min-height:61px!important;flex-direction:column;gap:4px;background:linear-gradient(#282d49,#1a1f34);border-color:#474b70!important;color:#f0effc;box-shadow:0 2px #080a15;padding:7px}.token{border-color:#96551c;background:#ffd27b;outline-color:#c17a27;color:#70411f;box-shadow:1px 2px #a46b21;font-size:.82rem}.btn-coin:hover:not(:disabled){background:#343553;filter:none}.tray,.readout,.box,#defFormal,#sorTraza:not(:empty),.steps article{background:#1b2137;border-color:#373f5c}.tray{border-left-color:#7865bd}.tray-head{color:#d1c4fa}.btn-example,.btn-ok,.btn-like,#recLista button{background:#4e408b;color:#fff;border-color:#7869b2}.btn-reset,.btn-cancel{background:#272d46;color:#d9dcf1;border-color:#474b66}.actions{gap:5px}.actions .btn{flex:1;min-width:0;padding:6px 4px;font-size:.76rem}.actionLike{min-height:40px;width:100%;margin-top:8px;border:1px solid #75bc8d;border-radius:7px;background:#a0f3b2;color:#11311b;font-weight:750;cursor:pointer}.actionLike:hover{background:#bbffcb}.example-note summary{color:var(--accent)}.svg-container{background-color:#0b1120;background-image:radial-gradient(#30364d 1px,transparent 1px);border-color:#303953;min-height:120px}.svg-container svg{min-width:0;max-height:none}.key i{background:#263e3d;border-color:#99bcc0}.key.d i{background:#214d3c;border-color:#89c7a2}.key.on i{background:#ffbf59;border-color:#ffe9aa}.readout b{color:#ffd989}.plot .legend{font-size:.74rem;gap:5px 10px}.steps article{border:1px solid var(--card-border)}.steps article .btn{margin-top:10px}table{background:#111629}th,td{border-color:#383d56}th{background:#222840;color:#ddd9ff}tr:nth-child(even){background:#191e32}.count{color:#c5c8db}details p{color:var(--text-muted)}footer{border-color:var(--card-border)}.qrHint{color:var(--text-muted)}.qrDialog{width:min(420px,92vw);background:#171c31;color:var(--text);border:1px solid #5f578b;border-radius:13px;padding:20px;margin:auto;box-shadow:0 18px 48px #030511b3}.qrDialog::backdrop{background:#07091bc7}.qrDialog p{color:var(--text-muted);margin:10px 0}.qrDialog img{max-width:100%;height:auto}.qrDialog button{margin:6px 6px 0 0}.skip{z-index:10}
+    @media(max-width:1100px) and (min-width:761px){.container{grid-template-columns:155px minmax(0,1fr);column-gap:13px}.stage{grid-template-columns:minmax(138px,.58fr) minmax(220px,1fr)}.plot{grid-column:1/-1}.plot .svg-container svg{max-height:270px}.stage>.card{padding:12px}.railTop strong{font-size:1.35rem}}
+    @media(max-width:760px){.container{display:block;padding:0 12px}header,main,footer{margin-right:0}header{padding:9px 0;flex-wrap:nowrap}.brand{gap:6px}.brand b{font-size:1rem}.brand small{font-size:.58rem}.brand svg{width:25px;height:25px}.brand-right{gap:5px}.brand-right .badge{display:none}.shareBtn,.menuBtn{padding:5px 8px;font-size:.76rem}.menuBtn{display:inline-block}.rail{position:static;height:auto;min-height:0;background:#171b30;border:1px solid var(--card-border);border-radius:9px;margin:6px 0}.rail:not(.open){display:none}.railTop,.skyline,.navGroup{display:none}.tabs{display:grid;grid-template-columns:1fr 1fr;margin:0;padding:6px}.tab-btn{min-height:42px}.tab-btn:last-child{margin:0}main{padding-top:10px}.mission{margin:0 0 8px;display:block}.mission h1{font-size:1.6rem}.mission p{font-size:.79rem}.modebar{margin:8px 0;max-width:none;display:flex;gap:6px;align-items:center}.modebar label{margin:0}.modebar select{width:auto;min-height:32px}.modebar small{display:none}.stage{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}.cabinet{height:101px;display:grid;grid-template-columns:85px 1fr;grid-template-rows:1fr 1fr;align-items:end;justify-content:start;gap:0 12px;padding:5px 12px;background:radial-gradient(ellipse at 14% 45%,#553349,transparent 60%),#181a30}.sprite{grid-column:1;grid-row:1/3;width:100%;height:92px;align-self:center}.cabtag{grid-column:2;grid-row:1;align-self:end;color:#c1b8d0}.cabplate{grid-column:2;grid-row:2;align-self:start;text-align:left;margin-top:4px;font-size:.8rem;color:white}.stage>.card{padding:13px}.product{padding:6px 0 8px}.panel-head{margin-bottom:8px}.display-screen{padding:8px 12px;margin:0 0 10px}.btn-coin{min-height:48px!important;flex-direction:row}.plot{grid-column:auto}.svg-container svg{max-height:320px}.actionLike{min-height:44px}.actions .btn{min-height:42px}.steps{grid-template-columns:1fr}}
+    .escenaMovil{display:none}
+    @media(max-width:760px){
+      /* Primera pantalla: un escenario completo, con el cobro justo a sus pies. */
+      .mission{display:flex;align-items:center;gap:8px;margin:0 0 8px}.mission>div:first-child{min-width:0}.mission .micro{display:none}.mission h1{font-size:clamp(1rem,4.2vw,1.42rem);margin:0}.mission p{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mission .modebar{margin:0;flex:none}.mission .modebar label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mission .modebar select{font-size:.72rem;padding:4px;min-height:36px;max-width:47vw}
+      .cabinet{display:grid;grid-template:1fr / 1fr;place-items:center;height:clamp(216px,35vh,355px);height:clamp(216px,35svh,355px);padding:5px 0 9px;background:#191632;border-color:#453b61}
+      .escenaMovil{display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.cabinet:before{display:none}.cabinet .sprite{position:relative;grid-area:1/1;justify-self:center;align-self:center;width:auto;height:100%;max-width:73%;max-height:none;filter:drop-shadow(3px 6px 3px #080817a8)}
+      .cabtag,.cabplate{position:absolute;z-index:1;grid-column:auto;grid-row:auto;font:700 .56rem/1.3 var(--mono);letter-spacing:.055em;background:#0b0b1bc7;color:#f3e7f9;border:1px solid #85719770;border-radius:4px;padding:4px 6px;margin:0}.cabtag{top:8px;left:8px}.cabplate{left:8px;right:8px;bottom:7px;max-width:none;text-align:center;font-size:.58rem;white-space:nowrap}.cabinet.dispensed .cabplate{color:#b3ffbc}
+      .stage>.card:not(.plot) .panel-head{margin-bottom:5px}.stage>.card:not(.plot) .panel-head .micro{display:none}.stage>.card:not(.plot) .panel-head h2{font-size:.94rem}.stage>.card .product{padding:6px 0 10px;border:0}.product b{font-size:1rem}.price{font-size:1.05rem}.display-screen{border-radius:8px}.btn-coin{min-height:52px!important}.token{height:27px;width:27px}
+    }
+    @media(max-width:760px) and (max-height:660px){.cabinet{height:clamp(166px,30svh,216px)}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+
+  <header>
+    <div class="brand"><svg aria-hidden="true" viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#193d33"/><g stroke="#ffd0a2" stroke-width="2.3" fill="none"><ellipse cx="20" cy="13" rx="10" ry="4"/><path d="M10 13v5c0 5 20 5 20 0v-5M10 20v4c0 5 20 5 20 0v-4M10 26v3c0 5 20 5 20 0v-3"/></g></svg><div><b>Kiosco Discreto</b><small>UNMSM / FISI</small></div></div>
+    <div class="brand-right"><span class="badge" id="badgeK"></span><button class="shareBtn" id="btnSonido" aria-pressed="true" title="Activar o silenciar los sonidos">🔊 Sonido</button><button class="shareBtn" id="abrirQR">▦ Compartir QR</button><button class="menuBtn" id="menuMovil" aria-expanded="false" aria-controls="rail">☰ Menú</button></div>
+  </header>
+
+  <aside class="rail" id="rail"><div class="railTop"><div class="railIcon" aria-hidden="true">◈ ▪ 07 ▪ ◈</div><strong>KIOSCO<br>ARCADE</strong><small>Mate discreta · FISI</small></div><nav class="tabs" id="tabs" aria-label="Secciones del kiosco"><span class="navGroup">SALA DE JUEGO</span>
+    <button class="tab-btn active" data-tab="simulador" aria-current="page"><span aria-hidden="true">▷</span>Máquina</button><button class="tab-btn" data-tab="como"><span aria-hidden="true">?</span>Guía rápida</button><span class="navGroup">CUADERNO</span><button class="tab-btn" data-tab="tablas"><span aria-hidden="true">δ</span>Autómata</button><button class="tab-btn" data-tab="recurrencia"><span aria-hidden="true">Σ</span>Recurrencia</button><button class="tab-btn" data-tab="numeracion"><span aria-hidden="true">01</span>Numeración</button><button class="tab-btn" data-tab="sorpresa"><span aria-hidden="true">◎</span>Predicción</button><span class="navGroup">PROYECTO</span><button class="tab-btn" data-tab="megusta"><span aria-hidden="true">♡</span>Me gusta</button><button class="tab-btn" data-tab="config"><span aria-hidden="true">◇</span>Equipo</button>
+  </nav><svg class="skyline" viewBox="0 0 180 140" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges"><defs><linearGradient id="atardecer" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#29203d"/><stop offset=".65" stop-color="#865379"/><stop offset="1" stop-color="#d38382"/></linearGradient><pattern id="ventanas" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="3" height="4" x="3" y="2" fill="#b17c98"/></pattern></defs><rect width="180" height="140" fill="url(#atardecer)"/><path fill="#d99892" d="M14 56h38v3H5v-2h9zm90-16h35v3h-48v-2h13z"/><path fill="#33304e" d="M0 84h12V71h10v20h8V66h12v27h8V79h20v18h10V59h4v-7h3v7h5v36h15V75h16v25h13V65h17v25h17V74h10v66H0z"/><path fill="url(#ventanas)" d="M2 91h9v43H2zm29-19h10v62H31zm50-6h10v69H81zm58 6h12v63h-12z"/><path fill="#16182b" d="M0 115h67v8h23v17H0zm110 11h27v-11h25v12h18v13h-70zM30 114v-7h2v-7h4v-5h8v-7h2v-5h2v7h5v-6h2v12h-3v6h-3v11h3v3H31zm1-3h-7v-3h-5v-7h2v5h5v2h5z"/></svg></aside>
+  <dialog class="qrDialog" id="dialogQR" aria-labelledby="tituloQR"><span class="micro">Compartir / Aula</span><h2 id="tituloQR">Abre el kiosco en tu celular</h2><p id="estadoQR"></p><div id="vistaQR"></div><button class="btn btn-example" id="irConfigQR">Preparar un QR</button><button class="btn btn-reset" id="cerrarQR">Cerrar</button></dialog>
+  <main id="contenido" tabindex="-1">
+
+  <!-- 1. SIMULADOR -->
+  <div id="tab-simulador" class="tab-content active">
+    <section class="mission"><div><span class="micro">Laboratorio de autómatas / 07</span><h1>Simulador de compra</h1><p>Inserta monedas hasta alcanzar el precio. La entrega es automática.</p></div>
+    <div class="modebar"><label for="modo">Modo</label><select id="modo" aria-describedby="modoAyuda"><option value="libre">Compra libre · S/ 1, 2 y 5</option><option value="hoja">Caso de la hoja · S/ 1 y 2</option></select><small id="modoAyuda">Cambiar de modo inicia un registro nuevo.</small></div></section>
+    <div class="grid-2 stage">
+      <div class="cabinet" id="cabina">
+        <svg class="escenaMovil" viewBox="0 0 320 184" preserveAspectRatio="none" aria-hidden="true" shape-rendering="crispEdges"><defs>
+          <linearGradient id="cieloMovil" x2="0" y2="1"><stop stop-color="#14162e"/><stop offset=".4" stop-color="#31204e"/><stop offset=".7" stop-color="#75406b"/><stop offset=".84" stop-color="#c66676"/><stop offset="1" stop-color="#393053"/></linearGradient>
+          <pattern id="luzMovil" width="12" height="11" patternUnits="userSpaceOnUse"><path fill="#bd7183" d="M2 2h2v3H2z"/><path fill="#746295" d="M8 7h2v2H8z"/></pattern>
+          <path id="edificiosMovil" d="M0 131h7v-15h9v9h9v-20h5v-7h2v7h6v19h8v-10h12v17h9v-21h13v13h7v-8h12v17h11v-22h12v11h11v-10h16v14h14v8h9v-19h15v16h9v-18h9v13h13v-26h5v-4h2v4h5v20h9v-11h12v14h10v-18h11v7h7v-10h4v-15h2v15h7v16h6v-7h11v16h8v-9h9v47H0z"/>
+        </defs><rect width="320" height="184" fill="url(#cieloMovil)"/><g fill="#957bb4"><path d="M18 34h2v2h-2zm53-16h1v2h-1zm174 18h2v2h-2zm56-20h1v2h-1zM96 45h1v1h-1z"/></g><g fill="#50305f"><path d="M0 67h11v-4h8v-6h12v4h8v4h8v4H0zm230-19h8v-4h8v-5h10v-4h10v4h7v5h9v4h9v3h-61z"/></g><path fill="#905071" d="M5 69h40v1H5zm237-18h45v2h-45zM31 85h29v2H21v-1h10zm224 5h38v2h-38z"/><path fill="#67456e" d="M0 113h9v-9h8v7h8v-13h11v10h13v-5h8v10h12v-15h8v6h14v12h137v-13h11v-8h8v13h11v-11h8v8h9v-18h9v15h9v-9h11v10h16v44H0z"/><use href="#edificiosMovil" fill="#393053"/><use href="#edificiosMovil" fill="url(#luzMovil)"/><path fill="#24213b" d="M0 137h41v9h50v-7h26v6h83v-7h38v6h32v-14h50v54H0z"/><path fill="#121526" d="M0 142h40v5h19v9h209v-8h22v-10h30v46H0z"/><path fill="#736083" d="M0 141h40v2H0zm40 6h19v2H40zm228 1h22v2h-22zm22-11h30v2h-30z"/>
+        <!-- Gato sentado en la azotea; silueta secundaria a la izquierda del kiosco. -->
+        <path fill="#151526" d="M14 140v-4h2v-6h3v-5h4v-4h2v-7h2v3h5v-4h2v10h-2v4h-2v10h3v3H18v1h-9v-2H6v-7h2v5h4v1h3z"/><path fill="#eb9b9c" d="M33 119h1v2h-1z"/></svg>
+        <span class="cabtag">FISI ARCADE / N.º 07</span><svg class="sprite" viewBox="0 0 126 202" role="img" aria-label="Expendedora roja de bebidas en pixel art" shape-rendering="crispEdges"><defs>
+        <linearGradient id="chasis" x2=".2" y2="1"><stop stop-color="#ff826b"/><stop offset=".18" stop-color="#be4753"/><stop offset=".76" stop-color="#a73646"/><stop offset="1" stop-color="#752d40"/></linearGradient><linearGradient id="cristal" x2=".3" y2="1"><stop stop-color="#50374b"/><stop offset=".45" stop-color="#211f37"/><stop offset="1" stop-color="#151a30"/></linearGradient><radialGradient id="lampara"><stop stop-color="#ffd084" stop-opacity=".62"/><stop offset="1" stop-color="#e6b16e" stop-opacity="0"/></radialGradient>
+        <g id="bebida"><path fill="#101728" d="M3 0h11v2h2v20h-2v2H3v-2H1V2h2z"/><path fill="#afbed0" d="M4 1h9v2H4zm0 20h9v2H4z"/><path fill="currentColor" d="M3 4h11v16H3z"/><path fill="#e9eff7" d="M9 5h4l-4 6h3l-7 8 2-7H4z"/><path fill="#fff" opacity=".5" d="M4 4h2v5H4z"/></g></defs>
+        <path fill="#090d17" d="M8 190h109v5H8zM16 195h92v3H16z"/><path fill="#363349" d="M23 180h12v13H22zm65 0h12v13H88z"/><path fill="#170f20" d="M22 6h80v3h5v5h5v165h-4v6h-6v3H19v-4h-6v-5h-3V17h3v-5h4V7h5z"/><path fill="url(#chasis)" d="M21 9h79v3h5v5h3v160h-4v5H20v-3h-6V18h3v-5h4z"/><path fill="#ff9a7f" d="M22 11h77v3H22zm-5 7h3v158h-3z"/><path fill="#782e3c" d="M101 18h4v159h-4zm-80 158h79v5H21z"/>
+        <path fill="#241b2b" d="M23 23h75v3h3v108h-3v4H23v-3h-3V27h3z"/><rect x="25" y="28" width="71" height="104" fill="url(#cristal)"/><path fill="#515068" d="M25 31h3v96h-3zm3 98h66v3H28z"/><ellipse cx="60" cy="37" rx="36" ry="24" fill="url(#lampara)"/><rect x="42" y="30" width="38" height="2" fill="#ffcf89"/><rect x="46" y="30" width="30" height="1" fill="#fff9cf"/>
+        <g fill="#101426"><path d="M31 64h60v5H31zm0 30h60v5H31zm0 30h60v5H31z"/></g><path fill="#706784" d="M31 64h60v2H31zm0 30h60v2H31zm0 30h60v2H31z"/>
+        <g color="#cc6359"><use href="#bebida" x="39" y="40"/><use href="#bebida" x="66" y="40"/></g><g color="#3782c9"><use href="#bebida" x="39" y="70"/><use href="#bebida" x="66" y="70"/></g><rect x="48" y="99" width="25" height="25" rx="2" fill="#c89a44" opacity=".3"/><path d="M48 100h25v24H48z" fill="none" stroke="#ffcf68"/><use href="#bebida" color="#61b49f" x="52" y="100"/>
+        <rect x="80" y="141" width="15" height="7" fill="#252333"/><rect id="slotLED" x="82" y="143" width="11" height="3" fill="#8afa9b"/><rect x="31" y="153" width="52" height="19" fill="#482537"/><rect x="33" y="154" width="48" height="14" fill="#0d1422"/><path d="M34 168h46v2H34z" fill="#4c465b"/><g class="prize"><g transform="translate(67 155) rotate(90) scale(.65)"><use id="spritePremio" href="#bebida" color="#61b49f"/></g></g><path fill="#f58678" d="M23 145h10v2H23zm2-6h4v1h-4zm62 34h11v2H87z"/></svg><span class="cabplate" id="cabTexto">LISTA PARA JUGAR</span></div>
+      <div class="card">
+        <div class="panel-head"><div><span class="micro">01 / Máquina</span><h2>Panel de compra</h2></div><span class="pill lamp" id="maquinaStatus">Lista</span></div>
+        <div class="product"><span class="product-mark" aria-hidden="true">ϟ</span><div><span class="micro">Producto</span><b id="txtProducto"></b></div><div class="price"><span class="micro">Precio</span><span id="txtPrecio"></span></div></div>
+        <div class="display-screen">
+          <span class="micro">Saldo actual</span><div class="balance-row"><div class="display-amount" id="dspMonto">S/ 0.00</div><div class="display-state" id="dspEstado">Estado: S_0</div></div><div class="track" aria-hidden="true"><span id="nivelSaldo"></span></div><div class="credit-note" id="creditoNota"></div>
+        </div>
+        <div class="payrow"><strong>Inserta una moneda</strong><small>Un toque = una moneda</small></div>
+        <div class="btn-group" id="botonesMonedas"></div>
+        <div class="tray"><div class="tray-head">Bandeja de entrega</div><div id="dspBandeja" role="status">Esperando tu primera moneda.</div></div>
+        <button class="actionLike" data-ir="megusta">♡ &nbsp; Dar me gusta</button>
+        <div class="actions"><button class="btn btn-example" id="btnEjemplo">▷ Ver ejemplo</button><button class="btn btn-cancel" id="btnCancelar">Devolver saldo</button><button class="btn btn-reset" id="btnReiniciar">Reiniciar</button></div>
+        <details class="example-note"><summary>Datos del ejemplo</summary><p id="txtEjemplo"></p><p id="txtFormula"></p></details>
+      </div>
+
+      <div class="card plot"><div class="panel-head"><div><span class="micro">02 / Autómata de Moore</span><h2>Diagrama de estados</h2></div><span class="pill lamp">En vivo</span></div>
+        <div class="svg-container" id="svgContenedor" role="img" aria-label="Diagrama de estados de Moore"></div>
+        <div class="legend"><span class="key"><i></i>Saldo</span><span class="key d"><i></i>Despacho</span><span class="key on"><i></i>Estado actual</span></div><div class="readout"><span class="micro">Último paso</span><b id="ultimoPaso">Inicio en S_0</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="panel-head"><div><span class="micro">03 / Historial</span><h2>Registro de transiciones</h2></div><span class="count" id="cuentaPasos">0 pasos</span></div>
+      <div style="overflow-x:auto;">
+        <table id="tblHistorial">
+          <thead><tr><th>#</th><th>Origen</th><th>Entrada</th><th>Acumulado</th><th>Destino</th><th>Salida</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PREDICCIÓN / PREGUNTA SORPRESA -->
+  <div id="tab-sorpresa" class="tab-content">
+    <div class="card" data-kicker="Taller / Predicción"><h2 class="card-title">¿Dónde terminará la máquina?</h2>
+      <p class="muted" style="margin-bottom:10px;">
+        Un voluntario propone una secuencia nueva con monedas del modo activo. <strong id="alfabetoPred"></strong>
+        Escriban su predicción y recién entonces pulsen «Revelar». La simulación parte siempre de S_0.
+      </p>
+      <label for="sorSecuencia">1. Escribe la secuencia de monedas, separadas por comas</label>
+      <input type="text" id="sorSecuencia" placeholder="Ej: 1, 2, 5">
+      <div class="grid-2">
+        <div>
+          <label for="sorEstado">2. Predice el estado final (S_i o D_v)</label>
+          <input type="text" id="sorEstado" placeholder="S_0">
+        </div>
+        <div>
+          <label for="sorVuelto">3. Predice el vuelto total (S/)</label>
+          <input type="number" id="sorVuelto" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ok" id="btnRevelar">Comprobar predicción</button>
+        <button class="btn btn-example" id="btnEjecutarSec">▶ Ejecutar en la máquina</button>
+      </div>
+      <div class="msg" id="sorMsg" role="status"></div>
+      <pre id="sorTraza"></pre>
+    </div>
+  </div>
+
+  <!-- 3. MOORE Y MEALY -->
+  <div id="tab-tablas" class="tab-content">
+    <div class="card" data-kicker="Cuaderno / Máquinas con salida"><h2 class="card-title">Un pago, dos modelos</h2><p>Moore pone la salida en el estado; Mealy, en la transición. Compara ambas tablas con las monedas del modo activo.</p>
+      <p class="muted" id="defFormal" style="margin-bottom:12px;"></p>
+
+      <h3 style="color:var(--gold);font-size:1rem;">1. Moore (la salida depende solo del estado)</h3>
+      <p class="muted">Al vender se pasa a un estado de despacho D_v cuya salida es «producto + vuelto v». Desde D_v, la siguiente moneda se procesa como desde S_0.</p>
+      <div style="overflow-x:auto;"><table id="tblMoore"><thead></thead><tbody></tbody></table></div>
+
+      <h3 style="color:var(--green);font-size:1rem;margin-top:20px;">2. Mealy (la salida depende de estado y entrada: siguiente / salida)</h3>
+      <div style="overflow-x:auto;"><table id="tblMealy"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- 4. RECURRENCIA -->
+  <div id="tab-recurrencia" class="tab-content">
+    <div class="card" data-kicker="Cuaderno / Recurrencia"><h2 class="card-title">Caminos al pago exacto</h2>
+      <p style="font-size:.95rem;margin-bottom:12px;" id="recEnunciado"></p>
+      <button class="btn btn-ok" id="btnVerRec" style="margin-bottom:12px;" aria-expanded="false" aria-controls="recSolucion">Ver procedimiento y probar pagos</button>
+      <div id="recSolucion" style="display:none;">
+        <div class="grid-2">
+          <div class="box"><h4 style="color:var(--gold);margin-bottom:8px;">Planteamiento</h4><pre id="recDeduccion"></pre></div>
+          <div class="box"><h4 style="color:var(--green);margin-bottom:8px;" id="recTotalTitle"></h4>
+            <div style="max-height:280px;overflow-y:auto;font-family:monospace;font-size:.9rem;" id="recLista"></div></div>
+        </div>
+        <p class="muted" style="margin-top:10px;">Cada secuencia es un camino desde S_0 hasta el primer despacho exacto D_0. Pulsa «Probar» para recorrerlo en el modo de la hoja.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. NUMERACIÓN -->
+  <div id="tab-numeracion" class="tab-content">
+    <div class="card" data-kicker="Cuaderno / Numeración"><h2 class="card-title">Un número, dos bases</h2><p>Divide entre 2 o 16 hasta llegar a cociente cero. Lee los residuos de abajo hacia arriba y compara con tu hoja.</p>
+      <div id="numTitulo" style="font-weight:bold;color:var(--gold);margin-bottom:12px;"></div>
+      <button class="btn btn-ok" id="btnVerNum" style="margin-bottom:12px;" aria-expanded="false" aria-controls="numSolucion">Ver divisiones paso a paso</button>
+      <div id="numSolucion" style="display:none;">
+        <div class="grid-2">
+          <div>
+            <h4 style="color:var(--accent);margin-bottom:6px;" id="binTitulo"></h4>
+            <div style="overflow-x:auto;"><table id="tblBin"><thead><tr><th>Dividendo</th><th>Divisor</th><th>Cociente</th><th>Residuo</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <div>
+            <h4 style="color:var(--green);margin-bottom:6px;" id="hexTitulo"></h4>
+            <div style="overflow-x:auto;"><table id="tblHex"><thead><tr><th>Dividendo</th><th>Divisor</th><th>Cociente</th><th>Residuo</th><th>Dígito</th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. ME GUSTA -->
+  <div id="tab-megusta" class="tab-content">
+    <div class="card" data-kicker="Participación / Me gusta"><h2 class="card-title">¿Probaste el kiosco?</h2>
+      <p class="muted" id="likeModo" style="margin-bottom:12px;"></p>
+      <form id="formLike" autocomplete="off">
+        <div class="grid-2">
+          <div><label for="likeNombre">Nombres y apellidos:</label><input type="text" id="likeNombre" required maxlength="80" placeholder="Ej: Juan Pérez"></div>
+          <div><label for="likeCodigo">Código de estudiante (8 dígitos):</label><input type="text" id="likeCodigo" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric" placeholder="Ej: 23200123"></div>
+        </div>
+        <label for="likeComentario">¿Qué probaste? (hasta 140 caracteres)</label>
+        <input type="text" id="likeComentario" maxlength="140" placeholder="Ej: Ingresé 2, 2 y 5 y dio el vuelto esperado.">
+        <button type="submit" class="btn btn-like" id="btnLike" style="width:100%;">❤️ Enviar mi «Me gusta»</button>
+      </form>
+      <div class="msg" id="likeMsg" role="status"></div>
+        <p id="likeExterno" hidden><a id="enlaceForm" target="_blank" rel="noopener" style="color:var(--accent)">Dar me gusta en el formulario del equipo ↗</a></p>
+        <div id="resumenLikes" style="margin-top:14px;">
+        <h4 style="color:var(--accent);margin-bottom:6px;">Total de «me gusta»: <span id="likeContador">0</span></h4>
+        <div id="listaLikes" class="muted">Aún no hay votos registrados.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. CONFIGURACIÓN -->
+  <div id="tab-config" class="tab-content">
+    <div class="card" data-kicker="Proyecto 07 / Ficha técnica"><h2 class="card-title">El equipo del kiosco</h2>
+      <p id="fichaEquipo"></p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Código QR de la aplicación</h2>
+      <p class="muted" style="margin-bottom:8px;">Pega el enlace público (el que termina en /exec). Esta es la única función que usa un servicio externo (api.qrserver.com); genera el QR una vez y guárdalo como imagen para imprimirlo.</p>
+      <label for="qrUrl">Enlace público</label><input type="url" id="qrUrl" placeholder="https://…">
+      <button class="btn btn-example" id="btnQR" style="width:100%;">Mostrar QR</button>
+      <div style="text-align:center;margin-top:10px;" id="qrCont"></div>
+    </div>
+  </div>
+
+  <!-- 8. ¿CÓMO FUNCIONA? -->
+  <div id="tab-como" class="tab-content">
+    <div class="card" data-kicker="Guía rápida / Cómo funciona"><h2 class="card-title">Tres maneras de explorar el kiosco</h2>
+      <div class="steps"><article><span class="micro">01 / Autómatas</span><h3>Sigue una moneda</h3><p>En Moore el estado de despacho indica el vuelto. En Mealy la venta aparece en la flecha que completa el pago.</p><button class="btn btn-example" data-ir="simulador">Probar la máquina →</button></article>
+        <article><span class="micro">02 / Recurrencia</span><h3>Busca un pago exacto</h3><p>La última moneda es de 1 o de 2: las formas de pagar n suman las de n−1 y n−2. Recorre una para comprobarlo.</p><button class="btn btn-example" data-ir="recurrencia">Explorar pagos →</button></article>
+        <article><span class="micro">03 / Numeración</span><h3>Cambia de base</h3><p>El precio es 3 + (K mod 4). En numeración se transforma 2026 + K a binario y hexadecimal mediante divisiones sucesivas.</p><button class="btn btn-example" data-ir="numeracion">Ver las bases →</button></article>
+      </div>
+    </div>
+  </div>
+
+  </main><footer>
+    <div id="footerIntegrantes"></div>
+    <div style="font-size:.75rem;margin-top:4px;color:#64748b;">Docente: Dr. José Alfredo Herrera Quispe · Exposición: miércoles 25 de noviembre de 2026</div>
+  </footer>
+</div>
+
+<script>
+/* ==========================================================================
+   CONSTANTE EXIGIDA POR LA GUÍA DOCENTE: valor K del equipo
+   (suma de los últimos dígitos de los códigos de los 3 integrantes).
+   Si cambian los códigos reales, actualicen este valor también.
+   ========================================================================== */
+const mirlo1551 = 10;
+/* ========================================================================== */
+
+// ¿Está corriendo dentro de Google Apps Script?
+const ES_GAS = (typeof google !== 'undefined') && google.script && google.script.run;
+
+// Bloque público generado por configurar_equipo.py. Los códigos no se publican.
+// INICIO_FICHA
+const ficha = {"producto":"Bebida Energizante FISI","ubicacion":"Kiosco FISI (prototipo)","nombres":[],"ejemplo":[2,1,2],"formulario":"","demo":true};
+// FIN_FICHA
+const cfg = { ...ficha, K: mirlo1551, monedas: [1, 2, 5] };
+
+// ---- Estado de la simulación ----
+// Estado: {k:'S', i} = saldo i (espera monedas) | {k:'D', v} = despacho con vuelto v
+let estado = { k: 'S', i: 0 };
+let historial = [];
+let ultimaArista = null;   // Origen, moneda y destino del último salto real.
+let enCurso = false;       // evita mezclar monedas durante una animación
+
+const $ = id => document.getElementById(id);
+function esc(t) {
+  return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ======================= MODELO DEL AUTÓMATA ======================= */
+function precio() {
+  return 3 + (cfg.K % 4);
+}
+
+// Función de transición δ y de salida: desde un estado con una moneda m.
+// Desde D_v la moneda se procesa como desde S_0 (base = 0).
+function paso(e, m) {
+  if (!cfg.monedas.includes(m)) throw new RangeError('Moneda fuera del alfabeto activo.');
+  const P = precio();
+  const base = (e.k === 'S') ? e.i : 0;
+  const acum = base + m;
+  if (acum >= P) {
+    const v = acum - P;
+    return { base, acum, venta: true, vuelto: v, destino: { k: 'D', v } };
+  }
+  return { base, acum, venta: false, vuelto: 0, destino: { k: 'S', i: acum } };
+}
+function nom(e) { return e.k === 'S' ? 'S_' + e.i : 'D_' + e.v; }
+
+// Conjunto de vueltos posibles (define los estados de despacho D_v)
+function valoresVuelto() {
+  const P = precio(), s = new Set();
+  for (let i = 0; i < P; i++) cfg.monedas.forEach(m => { if (i + m >= P) s.add(i + m - P); });
+  return [...s].sort((a, b) => a - b);
+}
+
+// Simulación pura (no toca la pantalla), siempre desde S_0
+function simular(arr) {
+  let e = { k: 'S', i: 0 }, vt = 0, ventas = 0; const pasos = [];
+  arr.forEach(m => {
+    const o = e, r = paso(e, m); e = r.destino;
+    if (r.venta) { vt += r.vuelto; ventas++; }
+    pasos.push(nom(o) + ' --(' + m + ')--> ' + nom(e) + (r.venta ? '   [producto + vuelto S/ ' + r.vuelto + ']' : ''));
+  });
+  return { e, vt, ventas, pasos };
+}
+
+function parseSecuencia(txt) {
+  const tok = String(txt).split(/[\s,;+]+/).filter(Boolean);
+  if (!tok.length || tok.length > 32 || tok.some(t => !/^\d+$/.test(t))) return null;
+  const nums = tok.map(Number);
+  if (nums.some(n => !cfg.monedas.includes(n))) return null;
+  return nums;
+}
+
+/* ======================= SONIDO (MP3 reales + síntesis de apoyo) ======================= */
+const Sfx = (() => {
+  let ctx = null, master = null, noiseBuf = null;
+  let on = true;
+  try { on = localStorage.getItem('kioscoSonido') !== '0'; } catch (e) {}
+  // MP3 del equipo (copiados en /sonidos)
+  const RUTAS = {
+    moneda: 'sonidos/moneda.mp3',
+    compra: 'sonidos/compra.mp3',
+    lata: 'sonidos/lata.mp3'
+  };
+  const cache = {};
+  function mp3(nombre, vol) {
+    if (!on) return null;
+    let base = cache[nombre];
+    if (!base) {
+      base = new Audio(RUTAS[nombre]);
+      base.preload = 'auto';
+      cache[nombre] = base;
+    }
+    // clone para poder solapar monedas rápidas
+    const a = base.cloneNode();
+    a.volume = vol == null ? 1 : vol;
+    const p = a.play();
+    if (p && p.catch) p.catch(() => {});
+    return a;
+  }
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = 0.34;
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 4;
+      master.connect(comp); comp.connect(ctx.destination);
+      const len = Math.floor(ctx.sampleRate * 0.5);
+      noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return true;
+  }
+  function noise(t0, dur, type, freq, q, vol) {
+    if (!on || !ensure()) return;
+    const t = ctx.currentTime + t0;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q || 1;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(master);
+    src.start(t); src.stop(t + dur + 0.02);
+  }
+  function metal(t0, partials, dur, vol, noiseVol) {
+    if (!on || !ensure()) return;
+    if (noiseVol) noise(t0, Math.min(dur * 0.35, 0.03), 'highpass', 3200, 0.8, noiseVol);
+    const t = ctx.currentTime + t0;
+    partials.forEach(([f, amp, dec]) => {
+      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+      const g = ctx.createGain();
+      const d = dec || dur;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol * amp, t + 0.003);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g); g.connect(master);
+      o.start(t); o.stop(t + d + 0.02);
+    });
+  }
+  function thud(t0, f0, f1, dur, vol) {
+    if (!on || !ensure()) return;
+    const t = ctx.currentTime + t0;
+    const o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(f0, t);
+    o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.02);
+    noise(t0, Math.min(dur * 0.5, 0.05), 'lowpass', 900, 0.7, vol * 0.5);
+  }
+  function sonarDevolucion(n) {
+    const cnt = n || 2;
+    for (let i = 0; i < cnt; i++) {
+      const t = i * 0.09 + Math.random() * 0.03;
+      metal(t, [[2300 + i * 260, .85, .09], [3900 + i * 200, .45, .06], [5700, .22, .04]], 0.1, 0.2, 0.14);
+      thud(t + 0.05, 300, 120, 0.07, 0.18);
+    }
+  }
+  function sonarCampana() {
+    metal(0, [[1320, .9, .5], [2640, .35, .35], [3960, .15, .22], [5280, .08, .15]], 0.5, 0.14, 0);
+  }
+  function clic(bajo) {
+    if (bajo) { thud(0, 180, 90, 0.06, 0.28); noise(0, 0.03, 'lowpass', 700, 0.8, 0.12); }
+    else { metal(0, [[1740, .8, .04], [3120, .4, .03]], 0.05, 0.14, 0.1); }
+  }
+  return {
+    get activo() { return on; },
+    alternar() {
+      on = !on;
+      try { localStorage.setItem('kioscoSonido', on ? '1' : '0'); } catch (e) {}
+      if (on) mp3('moneda', 0.7);
+      return on;
+    },
+    moneda() { mp3('moneda', 0.9); },
+    compra() { mp3('compra', 1); },
+    entrega() { mp3('lata', 1); },
+    cancelar(n) { sonarDevolucion(Math.min(4, Math.max(1, n || 2))); },
+    reiniciar() { clic(false); },
+    meGusta() { sonarCampana(); },
+    denegar() { clic(true); }
+  };
+})();
+
+/* ======================= SIMULADOR ======================= */
+function aplicarMoneda(m) {
+  const origen = estado, r = paso(origen, m);
+  estado = r.destino;
+  ultimaArista = { origen: nom(origen), moneda: m, destino: nom(r.destino) };
+  historial.unshift({
+    n: historial.length + 1, origen: nom(origen), entrada: '+ S/ ' + m,
+    acum: 'S/ ' + r.acum, destino: nom(r.destino),
+    salida: r.venta ? ('Producto + vuelto S/ ' + r.vuelto) : '—'
+  });
+  const t = $('dspBandeja');
+  if (r.venta) {
+    t.innerHTML = '<strong>Producto entregado: ' + esc(cfg.producto) + '.</strong> Vuelto: S/ ' + r.vuelto + '.00';
+    t.style.color = 'var(--green)';
+  } else {
+    t.textContent = 'Moneda recibida. Acumulado S/ ' + r.acum + '. Falta S/ ' + (precio() - r.acum) + '.';
+    t.style.color = 'var(--accent)';
+  }
+  pintarMaquina();
+  const led=$('slotLED'), premio=$('spritePremio');
+  // Reiniciar el destello incluso si se introduce la misma moneda dos veces.
+  led.classList.remove('pulseSlot'); premio.classList.remove('vendAnim');
+  led.getBoundingClientRect(); led.classList.add('pulseSlot');
+  if (r.venta) {
+    premio.classList.add('vendAnim');
+    Sfx.compra();
+    setTimeout(() => Sfx.entrega(), 700);
+  } else {
+    Sfx.moneda();
+  }
+}
+
+function cancelar() {
+  const t = $('dspBandeja');
+  if (estado.k !== 'S' || estado.i === 0) {
+    t.textContent = 'No hay saldo acumulado para devolver.'; t.style.color = 'var(--text-muted)';
+    Sfx.denegar();
+    return;
+  }
+  const dev = estado.i, origen = estado;
+  estado = { k: 'S', i: 0 }; ultimaArista = null;
+  historial.unshift({ n: historial.length + 1, origen: nom(origen), entrada: 'CANCELAR', acum: 'S/ 0', destino: 'S_0', salida: 'Devuelve S/ ' + dev });
+  t.textContent = 'Operación cancelada. Se devuelven S/ ' + dev + '.00.'; t.style.color = 'var(--red)';
+  pintarMaquina();
+  Sfx.cancelar(dev);
+}
+
+function reiniciar() {
+  const había = historial.length > 0;
+  estado = { k: 'S', i: 0 }; historial = []; ultimaArista = null;
+  const t = $('dspBandeja'); t.textContent = 'Esperando tu primera moneda.'; t.style.color = 'var(--text-muted)';
+  pintarMaquina();
+  if (había) Sfx.reiniciar();
+}
+
+// Reproduce una secuencia paso a paso (animada)
+function correrSecuencia(arr, ms) {
+  if (enCurso) return;
+  enCurso = true; bloquearBotones(true);
+  let idx = 0;
+  (function sig() {
+    if (idx >= arr.length) { enCurso = false; bloquearBotones(false); return; }
+    aplicarMoneda(arr[idx++]);
+    setTimeout(sig, ms);
+  })();
+}
+function bloquearBotones(b) {
+  document.querySelectorAll('#botonesMonedas button, #btnCancelar, #btnReiniciar, #btnEjemplo, #btnEjecutarSec, #modo, #recLista button')
+    .forEach(x => x.disabled = b);
+}
+
+function pintarMaquina() {
+  const P = precio();
+  $('badgeK').textContent = (cfg.demo ? 'DEMOSTRACIÓN · ' : '') + 'K = ' + cfg.K;
+  $('txtProducto').textContent = cfg.producto;
+  $('txtPrecio').textContent = 'S/ ' + P + '.00';
+  $('txtFormula').textContent = '(P = 3 + (' + cfg.K + ' mod 4))';
+  const monto = (estado.k === 'S') ? estado.i : 0;
+  $('dspMonto').textContent = 'S/ ' + monto + '.00';
+  $('dspEstado').textContent = 'Estado: ' + nom(estado);
+  const entrega = estado.k === 'D', ultimo = historial[0];
+  $('cabina').classList.toggle('dispensed', entrega);
+  $('cabTexto').textContent = entrega ? 'PRODUCTO ENTREGADO' : monto ? 'CRÉDITO · S/ ' + monto + '.00' : 'LISTA PARA JUGAR';
+  $('nivelSaldo').style.width = (100 * monto / P) + '%';
+  $('creditoNota').textContent = entrega ? 'Compra completada · la siguiente moneda inicia otro pago.' : 'Faltan S/ ' + (P-monto) + '.00 para el producto.';
+  $('maquinaStatus').textContent = entrega ? 'Despachado' : monto ? 'Recibiendo pago' : 'Lista';
+  $('cuentaPasos').textContent = historial.length + (historial.length === 1 ? ' paso' : ' pasos');
+  $('ultimoPaso').textContent = ultimo ? `${ultimo.origen} → ${ultimo.destino} · ${ultimo.entrada === 'CANCELAR' ? 'devolución' : ultimo.entrada}` : 'Inicio en S_0 · saldo cero';
+  $('svgContenedor').setAttribute('aria-label','Diagrama de Moore. ' + $('ultimoPaso').textContent + '. Estado actual: ' + nom(estado));
+  $('txtEjemplo').textContent = (cfg.demo ? 'Ejemplo de demostración: ' : 'Ejemplo de la hoja del equipo: ') + cfg.ejemplo.join(', ') + '. El botón Ejemplo activa el modo de la hoja.';
+  dibujarDFA();
+  pintarHistorial();
+}
+
+function pintarHistorial() {
+  const tb = document.querySelector('#tblHistorial tbody');
+  if (!historial.length) { tb.innerHTML = '<tr><td colspan="6" class="muted">Sin transiciones todavía.</td></tr>'; return; }
+  tb.innerHTML = historial.map(h => '<tr><td>' + h.n + '</td><td>' + esc(h.origen) + '</td><td style="color:var(--gold);font-weight:bold;">' + esc(h.entrada) +
+    '</td><td>' + esc(h.acum) + '</td><td style="color:var(--accent);font-weight:bold;">' + esc(h.destino) + '</td><td style="text-align:left;">' + esc(h.salida) + '</td></tr>').join('');
+}
+
+function construirBotonesMonedas() {
+  const c = $('botonesMonedas'); c.innerHTML = '';
+  cfg.monedas.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-coin'; b.setAttribute('aria-label','Insertar moneda de S/ ' + m); b.innerHTML = '<span class="token" aria-hidden="true">'+m+'</span><span>+ S/ '+m+'</span>';
+    b.addEventListener('click', () => { if (!enCurso) aplicarMoneda(m); });
+    c.appendChild(b);
+  });
+}
+
+/* ======================= DIAGRAMA SVG ======================= */
+function dibujarDFA() {
+  const P = precio(), monedas = cfg.monedas, vs = valoresVuelto();
+  const mx = 50, sp = 86, rS = 20, rD = 20, yS = 120, yD = 270, H = 330;
+  const W = Math.max(mx * 2 + sp * (P - 1), 380);
+  const xS = i => (P === 1) ? W / 2 : mx + i * ((W - 2 * mx) / (P - 1));
+  const xD = idx => (vs.length === 1) ? W / 2 : mx + idx * ((W - 2 * mx) / (vs.length - 1));
+
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg">';
+  s += '<defs>' +
+       '<marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>' +
+       '<marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f59e0b"/></marker></defs>';
+
+  // Flecha de inicio a S_0
+  s += '<line x1="' + (xS(0) - 44) + '" y1="' + yS + '" x2="' + (xS(0) - rS - 2) + '" y2="' + yS + '" stroke="#94a3b8" stroke-width="2" marker-end="url(#a1)"/>';
+
+  // Aristas
+  for (let i = 0; i < P; i++) {
+    monedas.forEach(m => {
+      const j = i + m, hi = ultimaArista?.origen === 'S_' + i && ultimaArista.moneda === m;
+      const col = hi ? '#f59e0b' : '#64748b', w = hi ? 3 : 1.6, mk = hi ? 'a2' : 'a1';
+      if (j < P) {
+        const x1 = xS(i), x2 = xS(j), h = 22 + 16 * (j - i);
+        const xm = (x1 + x2) / 2;
+        s += '<path d="M' + x1 + ' ' + (yS - rS) + ' Q' + xm + ' ' + (yS - rS - 2 * h) + ' ' + x2 + ' ' + (yS - rS) + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')"/>';
+        s += '<text x="' + xm + '" y="' + (yS - rS - h - 4) + '" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">+' + m + '</text>';
+      } else {
+        const v = j - P, di = vs.indexOf(v);
+        const x1 = xS(i), x2 = xD(di);
+        const ex = x2 - 0, ey = yD - rD;
+        s += '<line x1="' + x1 + '" y1="' + (yS + rS) + '" x2="' + ex + '" y2="' + ey + '" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')" opacity="' + (hi ? 1 : .75) + '"/>';
+        // Cada denominación usa una altura distinta para no superponer etiquetas.
+        const t = m === 1 ? .29 : m === 2 ? .49 : .73;
+        const tx = x1 + (ex - x1) * t, ty = (yS + rS) + (ey - (yS + rS)) * t;
+        s += '<text x="' + tx + '" y="' + ty + '" fill="#b6dfc4" stroke="#182e2c" stroke-width="3" paint-order="stroke" font-size="12" font-weight="bold" text-anchor="middle">+' + m + '</text>';
+      }
+    });
+  }
+
+  // Desde despacho dibujamos la arista recorrida bajo demanda, sin fingir un origen S_0.
+  if (ultimaArista?.origen.startsWith('D_')) {
+    const a = ultimaArista, x = xD(vs.indexOf(Number(a.origen.slice(2))));
+    const otroD = a.destino.startsWith('D_'), n = Number(a.destino.slice(2));
+    const fin = otroD ? xD(vs.indexOf(n)) : xS(n);
+    const path = otroD ? `M ${x-10} ${yD+rD} C ${x-32} ${yD+48}, ${fin+32} ${yD+48}, ${fin+10} ${yD+rD}` : `M ${x} ${yD-rD} Q ${fin+32} ${(yD+yS)/2}, ${fin} ${yS+rS}`;
+    s += `<path d="${path}" stroke="#f59e0b" stroke-width="3" fill="none" marker-end="url(#a2)"/>`;
+  }
+  // Nodos S_i
+  for (let i = 0; i < P; i++) {
+    const act = (estado.k === 'S' && estado.i === i);
+    s += '<circle cx="' + xS(i) + '" cy="' + yS + '" r="' + rS + '" fill="' + (act ? '#ffad67' : '#263e3d') + '" stroke="' + (act ? '#ffe4bf' : '#99bcc0') + '" stroke-width="' + (act ? 4 : 2) + '"/>';
+    s += '<text x="' + xS(i) + '" y="' + (yS + 4) + '" fill="' + (act ? '#000' : '#fff') + '" font-size="12" font-weight="bold" text-anchor="middle">S_' + i + '</text>';
+    s += '<text x="' + xS(i) + '" y="' + (yS + rS + 14) + '" fill="#94a3b8" font-size="9" text-anchor="middle">S/ ' + i + '</text>';
+  }
+  // Nodos D_v (cuadrados)
+  vs.forEach((v, di) => {
+    const act = (estado.k === 'D' && estado.v === v), x = xD(di);
+    s += '<rect x="' + (x - rD) + '" y="' + (yD - rD) + '" width="' + (2 * rD) + '" height="' + (2 * rD) + '" rx="6" fill="' + (act ? '#ffad67' : '#214d3c') + '" stroke="' + (act ? '#ffe4bf' : '#89c7a2') + '" stroke-width="' + (act ? 4 : 2) + '"/>';
+    s += '<text x="' + x + '" y="' + (yD + 4) + '" fill="' + (act ? '#000' : '#fff') + '" font-size="12" font-weight="bold" text-anchor="middle">D_' + v + '</text>';
+    s += '<text x="' + x + '" y="' + (yD + rD + 13) + '" fill="#94a3b8" font-size="9" text-anchor="middle">vuelto ' + v + '</text>';
+  });
+  const leyenda = ultimaArista ? `${ultimaArista.origen} → (+${ultimaArista.moneda}) → ${ultimaArista.destino}` : 'Desde D_v cada moneda inicia otra compra';
+  s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" fill="#f59e0b" font-size="12" text-anchor="middle">' + leyenda + '</text>';
+  s += '</svg>';
+  $('svgContenedor').innerHTML = s;
+}
+
+/* ======================= TABLAS MOORE Y MEALY ======================= */
+function pintarTablas() {
+  const P = precio(), monedas = cfg.monedas, vs = valoresVuelto();
+  $('defFormal').innerHTML =
+    '• <strong>Σ (entradas)</strong> = {' + monedas.join(', ') + '} soles · <strong>q₀</strong> = S₀ · precio P = ' + P + '<br>' +
+    '• <strong>Moore:</strong> Q = {S₀…S_(P−1)} ∪ {D_v : v ∈ {' + vs.join(', ') + '}}, salida λ: Q → Δ<br>' +
+    '• <strong>Mealy:</strong> Q = {S₀…S_(P−1)}, salida λ: Q × Σ → Δ<br>' +
+    '• <strong>Δ (salidas)</strong> = {ninguna, producto + vuelto v}';
+
+  // Moore
+  let th = '<tr><th>Estado</th>' + monedas.map(m => '<th>+ S/ ' + m + '</th>').join('') + '<th>Salida λ(q)</th></tr>';
+  document.querySelector('#tblMoore thead').innerHTML = th;
+  let mh = '';
+  for (let i = 0; i < P; i++) {
+    mh += '<tr><td><strong>S_' + i + '</strong></td>' + monedas.map(m => '<td>' + nom(paso({ k: 'S', i }, m).destino) + '</td>').join('') + '<td class="muted">ninguna</td></tr>';
+  }
+  vs.forEach(v => {
+    mh += '<tr><td><strong style="color:var(--green);">D_' + v + '</strong></td>' + monedas.map(m => '<td>' + nom(paso({ k: 'D', v }, m).destino) + '</td>').join('') + '<td class="ok">producto + vuelto S/ ' + v + '</td></tr>';
+  });
+  document.querySelector('#tblMoore tbody').innerHTML = mh;
+
+  // Mealy
+  document.querySelector('#tblMealy thead').innerHTML = '<tr><th>Estado</th>' + monedas.map(m => '<th>Entrada S/ ' + m + '</th>').join('') + '</tr>';
+  let ml = '';
+  for (let i = 0; i < P; i++) {
+    ml += '<tr><td><strong>S_' + i + '</strong></td>' + monedas.map(m => {
+      const r = paso({k:'S', i}, m);
+      return '<td>' + (r.venta ? 'S_0 / producto + vuelto S/ ' + r.vuelto : nom(r.destino) + ' / —') + '</td>';
+    }).join('') + '</tr>';
+  }
+  document.querySelector('#tblMealy tbody').innerHTML = ml;
+}
+
+/* ======================= PREGUNTA SORPRESA ======================= */
+function revelar() {
+  const msg = $('sorMsg'), tr = $('sorTraza');
+  const arr = parseSecuencia($('sorSecuencia').value);
+  if (!arr) { msg.className = 'msg bad'; msg.textContent = errorSecuencia(); tr.textContent = ''; return; }
+  const pe = String($('sorEstado').value).toUpperCase().replace(/\s+/g, '');
+  const mm = /^([SD])_?(\d+)$/.exec(pe);
+  const predEstado = mm ? (mm[1] + '_' + mm[2]) : null;
+  const predVuelto = $('sorVuelto').value === '' ? null : Number($('sorVuelto').value);
+  if (!mm || !Number.isInteger(predVuelto) || predVuelto < 0) {msg.className='msg bad'; msg.textContent='Escribe primero tu predicción: estado (S_i o D_v) y vuelto total no negativo.'; tr.textContent=''; return false;}
+  const r = simular(arr), okE = predEstado === nom(r.e), okV = predVuelto === r.vt;
+  msg.className = 'msg';
+  msg.innerHTML = 'Estado final real: <strong>' + nom(r.e) + '</strong> ' + (predEstado === null ? '(sin predicción)' : okE ? '✅' : '❌') +
+    ' · Vuelto total real: <strong>S/ ' + r.vt + '</strong> ' + (predVuelto === null ? '(sin predicción)' : okV ? '✅' : '❌') +
+    ' · Ventas: ' + r.ventas;
+  tr.textContent = r.pasos.join('\n');
+  return true;
+}
+function ejecutarSecuenciaSorpresa() {
+  const arr = parseSecuencia($('sorSecuencia').value);
+  if (!revelar()) return;
+  reiniciar(); verTab('simulador'); correrSecuencia(arr, 700);
+}
+
+/* ======================= RECURRENCIA Y NUMERACIÓN ======================= */
+function pintarRecurrencia() {
+  const P = precio();
+  $('recEnunciado').textContent = 'Para P = ' + P + ' soles, ¿de cuántas maneras se puede pagar exactamente P soles con monedas de S/ 1 y S/ 2 si importa el orden? (Aquí la moneda de 5 no participa.)';
+  const a = [1, 1];
+  for (let i = 2; i <= P; i++) a.push(a[i - 1] + a[i - 2]);
+  let d = '1. PLANTEAMIENTO\nSea a_n el número de formas ordenadas de pagar n soles.\nLa última moneda fue:\n• de 1 sol  → antes había n−1 soles → a_(n−1) formas\n• de 2 soles → antes había n−2 soles → a_(n−2) formas\n⇒ a_n = a_(n−1) + a_(n−2), n ≥ 2\n\n2. CONDICIONES INICIALES\n• a_0 = 1\n• a_1 = 1\n\n3. TÉRMINOS HASTA P\n';
+  a.forEach((v, i) => { d += '• a_' + i + ' = ' + v + '\n'; });
+  d += '\n⇒ Formas de pagar P = ' + P + ': ' + a[P];
+  $('recDeduccion').textContent = d;
+  const combs = [];
+  (function bt(rem, path) {
+    if (rem === 0) { combs.push(path.slice()); return; }
+    if (rem >= 1) bt(rem - 1, path.concat(1));
+    if (rem >= 2) bt(rem - 2, path.concat(2));
+  })(P, []);
+  $('recTotalTitle').textContent = 'Total: ' + combs.length + ' combinaciones ordenadas';
+  $('recLista').innerHTML = combs.map((c, i) => '<div><span>' + (i + 1) + '. ' + c.join(' + ') + ' = S/ ' + P + '</span><button aria-label="Probar pago ' + c.join(' + ') + '" data-pago="' + c.join(',') + '">Probar</button></div>').join('');
+}
+
+function pintarNumeracion() {
+  const N = 2026 + cfg.K;
+  $('numTitulo').textContent = '2026 + K = 2026 + ' + cfg.K + ' = ' + N;
+  let act = N, rows = '', bits = [];
+  while (act > 0) { const q = Math.floor(act / 2), r = act % 2; rows += '<tr><td>' + act + '</td><td>2</td><td>' + q + '</td><td style="color:var(--accent);font-weight:bold;">' + r + '</td></tr>'; bits.push(r); act = q; }
+  document.querySelector('#tblBin tbody').innerHTML = rows;
+  $('binTitulo').textContent = '1. Binario: ' + N + ' = ' + bits.reverse().join('') + '₂';
+  act = N; rows = ''; const hs = [], hc = '0123456789ABCDEF';
+  while (act > 0) { const q = Math.floor(act / 16), r = act % 16; rows += '<tr><td>' + act + '</td><td>16</td><td>' + q + '</td><td>' + r + '</td><td style="color:var(--green);font-weight:bold;">' + hc[r] + '</td></tr>'; hs.push(hc[r]); act = q; }
+  document.querySelector('#tblHex tbody').innerHTML = rows;
+  $('hexTitulo').textContent = '2. Hexadecimal: ' + N + ' = ' + hs.reverse().join('') + '₁₆';
+}
+
+/* ======================= ME GUSTA ======================= */
+function pintarLikes(data) {
+  $('likeContador').textContent = data.total;
+  const c = $('listaLikes'); c.textContent = '';
+  if (!data.likes.length) { c.textContent = 'Aún no hay votos registrados.'; return; }
+  data.likes.forEach(l => {   // textContent: nunca se inserta HTML de usuarios
+    const d = document.createElement('div');
+    d.className = 'box';
+    const n = document.createElement('strong'); n.textContent = l.nombre;
+    const cm = document.createElement('div'); cm.style.cssText = 'color:var(--accent);font-size:.85rem;'; cm.textContent = l.comentario ? '"' + l.comentario + '"' : 'Sin comentario';
+    d.appendChild(n); d.appendChild(cm); c.appendChild(d);
+  });
+}
+function cargarLikes() {
+  if (ES_GAS) {
+    google.script.run.withSuccessHandler(pintarLikes).withFailureHandler(e => { $('likeMsg').className = 'msg bad'; $('likeMsg').textContent = 'No se pudo leer la lista: ' + (e && e.message || e); }).obtenerLikes();
+  }
+}
+function enviarLike(ev) {
+  ev.preventDefault();
+  const nombre = $('likeNombre').value.trim(), codigo = $('likeCodigo').value.trim(), com = $('likeComentario').value.trim();
+  const msg = $('likeMsg'); msg.className = 'msg';
+  if (!/^\d{8}$/.test(codigo)) { msg.className = 'msg bad'; msg.textContent = 'El código debe tener 8 dígitos.'; return; }
+  if (ES_GAS) {
+    $('btnLike').disabled = true;
+    google.script.run
+      .withSuccessHandler(r => { $('btnLike').disabled = false; msg.className = r.ok ? 'msg ok' : 'msg bad'; msg.textContent = r.mensaje; if (r.ok) $('formLike').reset(); cargarLikes(); })
+      .withFailureHandler(e => { $('btnLike').disabled = false; msg.className = 'msg bad'; msg.textContent = 'Error: ' + (e && e.message || e); })
+      .registrarLike(nombre, codigo, com);
+  }
+}
+
+/* ======================= CONFIGURACIÓN ======================= */
+function errorSecuencia() { return 'Usa entre 1 y 32 monedas del modo activo: ' + cfg.monedas.join(', ') + '.'; }
+function cambiarModo(modo) {
+  if (enCurso) return;
+  $('modo').value = modo;
+  cfg.monedas = modo === 'hoja' ? [1,2] : [1,2,5];
+  $('sorMsg').textContent = $('sorTraza').textContent = '';
+  $('sorEstado').value = $('sorVuelto').value = $('sorSecuencia').value = '';
+  reiniciar(); construirBotonesMonedas(); pintarTablas();
+  $('alfabetoPred').textContent = 'Σ = {' + cfg.monedas.join(', ') + '}.';
+  $('sorSecuencia').placeholder = 'Ej.: ' + cfg.monedas.join(', ');
+}
+function recorrerHoja(arr) {
+  if (enCurso) return;
+  cambiarModo('hoja'); verTab('simulador'); correrSecuencia(arr, 700);
+}
+
+/* ======================= NAVEGACIÓN Y ARRANQUE ======================= */
+function verTab(nombre) {
+  $('rail').classList.remove('open'); $('menuMovil').setAttribute('aria-expanded','false');
+  const panel = $('tab-'+nombre), anterior=document.querySelector('.tab-content.active');
+  document.querySelectorAll('.tab-btn').forEach(b => {const activo=b.dataset.tab===nombre; b.classList.toggle('active',activo); if(activo)b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');});
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + nombre));
+  if(anterior!==panel){const encabezado=panel.querySelector('h1,h2');encabezado.tabIndex=-1;encabezado.focus({preventScroll:true});window.scrollTo(0,0);}
+}
+function refrescarTodo() {
+  pintarMaquina(); pintarTablas(); pintarRecurrencia(); pintarNumeracion();
+  $('footerIntegrantes').textContent = (cfg.demo ? 'Demostración · Equipo pendiente de registrar' : 'Integrantes: ' + cfg.nombres.join(', ')) + ' | K = ' + cfg.K;
+  $('fichaEquipo').textContent = cfg.ubicacion + ' · ' + $('footerIntegrantes').textContent + ' · P = S/ ' + precio();
+}
+function toggle(idBtn, idDiv, textoMostrar, textoOcultar) {
+  $(idBtn).addEventListener('click', () => {
+    const d = $(idDiv), vis = d.style.display !== 'none';
+    d.style.display = vis ? 'none' : 'block';
+    $(idBtn).textContent = vis ? textoMostrar : textoOcultar;
+    $(idBtn).setAttribute('aria-expanded',String(!vis));
+  });
+}
+
+window.addEventListener('load', () => {
+  $('menuMovil').addEventListener('click',()=>{const abierta=$('rail').classList.toggle('open');$('menuMovil').setAttribute('aria-expanded',String(abierta));});
+  $('rail').addEventListener('keydown',e=>{if(e.key==='Escape'&&$('rail').classList.contains('open')){$('rail').classList.remove('open');$('menuMovil').setAttribute('aria-expanded','false');$('menuMovil').focus();}});
+  $('abrirQR').addEventListener('click',()=>{
+    const img=$('qrCont').querySelector('img'); $('vistaQR').replaceChildren();
+    if(img && img.complete && img.naturalWidth){$('vistaQR').append(img.cloneNode());$('estadoQR').textContent='Escanea el QR del enlace preparado por el equipo.';}
+    else {$('estadoQR').textContent=location.protocol==='file:'?'Estás usando el kiosco local. Cuando el equipo tenga un enlace público, podrá preparar aquí el QR para el salón.':'Prepara el QR con el enlace público del kiosco para que tus compañeros puedan escanearlo.';}
+    $('dialogQR').showModal();
+  });
+  $('cerrarQR').addEventListener('click',()=>$('dialogQR').close());
+  $('irConfigQR').addEventListener('click',()=>{$('dialogQR').close();verTab('config');$('qrUrl').focus();});
+  document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('actionLike'))Sfx.meGusta();verTab(b.dataset.ir);}));
+  $('btnSonido').addEventListener('click',()=>{
+    const activo=Sfx.alternar();
+    $('btnSonido').textContent=activo?'🔊 Sonido':'🔇 Silencio';
+    $('btnSonido').setAttribute('aria-pressed',String(activo));
+    $('btnSonido').title=activo?'Silenciar los sonidos':'Activar los sonidos';
+  });
+  if(!Sfx.activo){$('btnSonido').textContent='🔇 Silencio';$('btnSonido').setAttribute('aria-pressed','false');$('btnSonido').title='Activar los sonidos';}
+  $('modo').addEventListener('change', e => cambiarModo(e.target.value));
+  $('recLista').addEventListener('click', e => { const btn=e.target.closest('button[data-pago]'); if(btn) recorrerHoja(btn.dataset.pago.split(',').map(Number)); });
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) verTab(b.dataset.tab); });
+  $('btnCancelar').addEventListener('click', () => { if (!enCurso) cancelar(); });
+  $('btnReiniciar').addEventListener('click', () => { if (!enCurso) reiniciar(); });
+  $('btnEjemplo').addEventListener('click', () => recorrerHoja(cfg.ejemplo));
+  $('btnRevelar').addEventListener('click', revelar);
+  $('btnEjecutarSec').addEventListener('click', () => { if (!enCurso) ejecutarSecuenciaSorpresa(); });
+  $('formLike').addEventListener('submit', enviarLike);
+  $('btnQR').addEventListener('click', () => {
+    const u = $('qrUrl').value.trim(), c = $('qrCont'); c.textContent = '';
+    if (!/^https?:\/\//.test(u)) { c.textContent = 'Pega un enlace que empiece con https:// (ej: el enlace /exec de Google Apps Script)'; return; }
+    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(u);
+    const img = document.createElement('img');
+    img.alt = 'Código QR del Proyecto';
+    img.addEventListener('error',()=>{c.textContent='No se pudo cargar el QR. Comprueba la conexión y vuelve a intentarlo.';});
+    img.width = 240;
+    img.height = 240;
+    img.style.borderRadius = '8px';
+    img.style.border = '4px solid #ffffff';
+    img.style.background = '#ffffff';
+    img.style.padding = '4px';
+    img.src = qrSrc;
+    c.appendChild(img);
+
+    const linkDesc = document.createElement('a');
+    linkDesc.href = qrSrc;
+    linkDesc.target = '_blank';
+    linkDesc.className = 'btn btn-example';
+    linkDesc.style.display = 'inline-block';
+    linkDesc.style.marginTop = '10px';
+    linkDesc.style.textDecoration = 'none';
+    linkDesc.textContent = '📥 Abrir / Guardar Imagen del QR para diapositivas';
+    c.appendChild(document.createElement('br'));
+    c.appendChild(linkDesc);
+  });
+  toggle('btnVerRec', 'recSolucion', 'Ver procedimiento y probar pagos', 'Ocultar procedimiento');
+  toggle('btnVerNum', 'numSolucion', 'Ver divisiones paso a paso', 'Ocultar divisiones');
+
+  $('formLike').hidden = true;
+  $('resumenLikes').hidden = !ES_GAS;
+  if (ES_GAS) {
+    $('likeModo').textContent = 'Consultando el estado de la votación…';
+    google.script.run.withSuccessHandler(info => {
+      $('likeModo').textContent = info.mensaje;
+      $('formLike').hidden = !info.abierta;
+    }).withFailureHandler(() => { $('likeModo').textContent = 'No se pudo consultar la votación. Recarga para reintentar.'; }).estadoVotacion();
+  } else if (!cfg.demo && cfg.formulario) {
+    $('likeModo').textContent = 'El voto se registra en el formulario del equipo. Indica tu nombre, código y qué probaste.';
+    $('enlaceForm').href = cfg.formulario; $('likeExterno').hidden = false;
+  } else {
+    $('likeModo').textContent = 'Votación no habilitada en esta versión. No se registran votos en este dispositivo.';
+  }
+  cambiarModo('libre');
+  refrescarTodo();
+  cargarLikes();
+});
+</script>
+</body>
+</html>
