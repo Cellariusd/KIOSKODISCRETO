@@ -274,11 +274,15 @@
       <p id="fichaEquipo"></p>
     </div>
     <div class="card bitacora"><span class="micro">Bitácora del equipo · Proyecto 07</span><h2 class="card-title">Tres decisiones detrás del kiosco</h2>
-      <p>Trabajamos con un asistente de programación en OpenCode. Estos son tres pedidos del equipo, resumidos, y una forma de comprobar cada cambio.</p>
+      <p><b>Herramienta:</b> asistente de programación en OpenCode.</p>
+      <section><h3>Prompt de partida · reconstrucción según la plantilla del curso</h3><p>Esta versión describe el encargo con los datos finales del equipo; no es una transcripción del primer chat.</p>
+        <blockquote>Actúa como desarrollador web y tutor de Matemática Discreta. Crea «Kiosco Discreto» en un solo archivo HTML con CSS y JavaScript, sin librerías externas, para usarlo desde el celular. Los estudiantes de la FISI lo usarán para saber si sus monedas alcanzan y cuánto vuelto recibirán. Modela una expendedora con K = 15 y precio P = 3 + (K mod 4). Acepta monedas de S/ 1, 2 y 5; para comparar con la hoja usa solo 1 y 2. Resalta el estado y registra cada entrada y salida. Incluye un botón «Ejemplo» con 2, 2, 2, una guía «¿Cómo funciona?» de tres líneas y un pie con Loris Solano Rojas, Octavio Valenzuela y Emmanuel Mendez Rosales. Comenta el código en español. Antes de programar, haz tres preguntas y espera nuestras respuestas.</blockquote>
+      </section>
+      <h3>Tres prompts del historial · texto original</h3>
       <ol>
-        <li><span class="micro">01 / Precio del equipo</span><blockquote>Usa nuestro K real: 15.</blockquote><p>El precio pasó de S/ 5 a S/ 6. El ejemplo anterior (2, 1, 2) ya no llegaba al precio. <b>Cómo comprobarlo:</b> pulsa «Ver ejemplo»: con 2, 2, 2 la tercera moneda entrega el producto sin vuelto.</p></li>
-        <li><span class="micro">02 / Dos modelos, una venta</span><blockquote>En el mismo diagrama, deja elegir Mealy o Moore.</blockquote><p><b>Decisión:</b> representar el mismo pago de dos maneras. <b>Cómo comprobarlo:</b> después de una venta, cambia de modelo. En Moore el despacho es un estado; en Mealy, la flecha lleva la salida y termina en saldo cero.</p></li>
-        <li><span class="micro">03 / Respuesta al toque</span><blockquote>Recorta el sonido del «Me gusta» para que coincida con el toque.</blockquote><p>El clip tenía silencio inicial. Se conservó el golpe del efecto en unos 0,24 s. <b>Cómo comprobarlo:</b> activa el corazón con el sonido encendido y luego retíralo: el efecto solo acompaña la activación.</p></li>
+        <li><span class="micro">01 / Precio del equipo</span><blockquote>ADEMAS DE CAMBIAR EL K POR 15 , YA QUE ES LA SUMA REAL DE LOS DIGISTO DE MIS COMPAÑEROS Y MIO</blockquote><p>El precio pasó de S/ 5 a S/ 6. El ejemplo anterior (2, 1, 2) ya no llegaba al precio. <b>Cómo comprobarlo:</b> pulsa «Ver ejemplo»: con 2, 2, 2 la tercera moneda entrega el producto sin vuelto.</p></li>
+        <li><span class="micro">02 / Dos modelos, una venta</span><blockquote>tambien faltaria agregar un diagrama de mealy , poner como una opcion para ver como se trabaja con mealy o moore . en el mismo diagrama de estado , coloca una opcion para elegir mealy o mooore . Genera el diagrama de mealy para mi caso presente y agregalo</blockquote><p><b>Decisión:</b> representar el mismo pago de dos maneras. <b>Cómo comprobarlo:</b> después de una venta, cambia de modelo. En Moore el despacho es un estado; en Mealy, la flecha lleva la salida y termina en saldo cero.</p></li>
+        <li><span class="micro">03 / Respuesta al toque</span><blockquote>HE AGREGADO UN SONIDO DE LIKE NE LA CARPETA DE SONIDOS , AGREGALO Y RECORTALO PARA QUE QUEDE CUADRADO A LA HORA QUE SE DA ME GUSTA</blockquote><p>El clip tenía silencio inicial. Se conservó el golpe del efecto en unos 0,24 s. <b>Cómo comprobarlo:</b> activa el corazón con el sonido encendido y luego retíralo: el efecto solo acompaña la activación.</p></li>
       </ol>
       <section class="hallazgo"><h3>El error que reveló el pago exacto</h3><p><b>Observación:</b> al terminar 2, 2, 2, la primera vista Mealy dibujaba la flecha hasta S_0, pero dejaba todos los nodos sin resaltar y mostraba D_0 en «Último paso».</p><p><b>Causa y corrección:</b> el diagrama leía directamente el estado interno de Moore. Ahora, en Mealy, el despacho se muestra en la flecha y S_0 queda activo. Si insertas S/ 1 después, el nuevo pago empieza en S_1.</p></section>
       <button id="imprimirBitacora" type="button" class="btn btn-example">Imprimir ficha y bitácora</button>
@@ -1019,7 +1023,7 @@ function reaccionar(b) {
     corazon.className = 'heartBurst'; corazon.textContent = '♥'; corazon.setAttribute('aria-hidden', 'true');
     b.appendChild(corazon); setTimeout(() => corazon.remove(), 850);
   }
-  $('reaccionEstado').textContent = corazonActivo ? '¡Gracias por tu apoyo!' : 'Reacción retirada.';
+  $('reaccionEstado').textContent = corazonActivo ? (!ES_GAS && cfg.formulario ? 'Para registrar tu voto, pulsa «Enviar» en el formulario.' : '¡Gracias por tu apoyo!') : 'Reacción retirada.';
 }
 
 window.addEventListener('load', () => {
@@ -1065,7 +1069,7 @@ window.addEventListener('load', () => {
       $('formLike').hidden = !info.abierta;
     }).withFailureHandler(() => { $('likeModo').textContent = 'No se pudo consultar la votación. Recarga para reintentar.'; }).estadoVotacion();
   } else if (cfg.formulario) {
-    $('likeModo').textContent = '¿Te gustó la experiencia? Déjanos tu corazón y cuéntanos qué probaste.';
+    $('likeModo').textContent = 'El corazón abre el formulario. Envía tu nombre, código y qué probaste. Tu voto queda registrado cuando Google Forms confirma el envío.';
   } else {
     $('likeModo').textContent = 'Google Forms estará disponible cuando el equipo configure su enlace. Por ahora puedes dejar tu corazón; todavía no se registran votos.';
   }
