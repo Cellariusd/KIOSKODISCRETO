@@ -143,7 +143,7 @@
         <details class="example-note"><summary>Datos del ejemplo</summary><p id="txtEjemplo"></p><p id="txtFormula"></p></details>
       </div>
 
-      <div class="card plot"><div class="panel-head"><div><span class="micro">02 / Autómata de Moore</span><h2>Diagrama de estados</h2></div><span class="pill lamp">En vivo</span></div>
+      <div class="card plot"><div class="panel-head"><div><span class="micro" id="microDiagrama">02 / Autómata de Moore</span><h2>Diagrama de estados</h2></div><div style="display:flex;align-items:center;gap:10px;"><label for="tipoDiagrama" style="margin:0;font:700 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);">Modelo</label><select id="tipoDiagrama" aria-label="Modelo del diagrama de estados" style="min-height:34px;padding:4px 8px;font-size:.82rem;flex-shrink:0;width:auto;"><option value="moore" selected>Moore</option><option value="mealy">Mealy</option></select><span class="pill lamp">En vivo</span></div></div>
         <div class="svg-container" id="svgContenedor" role="img" aria-label="Diagrama de estados de Moore"></div>
         <div class="legend"><span class="key"><i></i>Saldo</span><span class="key d"><i></i>Despacho</span><span class="key on"><i></i>Estado actual</span></div><div class="readout"><span class="micro">Último paso</span><b id="ultimoPaso">Inicio en S_0</b></div>
       </div>
@@ -656,9 +656,8 @@ function pintarMaquina() {
   $('maquinaStatus').textContent = entrega ? 'Despachado' : monto ? 'Recibiendo pago' : 'Lista';
   $('cuentaPasos').textContent = historial.length + (historial.length === 1 ? ' paso' : ' pasos');
   $('ultimoPaso').textContent = ultimo ? `${ultimo.origen} → ${ultimo.destino} · ${ultimo.entrada === 'CANCELAR' ? 'devolución' : ultimo.entrada}` : 'Inicio en S_0 · saldo cero';
-  $('svgContenedor').setAttribute('aria-label','Diagrama de Moore. ' + $('ultimoPaso').textContent + '. Estado actual: ' + nom(estado));
   $('txtEjemplo').textContent = (cfg.demo ? 'Ejemplo de demostración: ' : 'Ejemplo de la hoja del equipo: ') + cfg.ejemplo.join(', ') + '. El botón Ejemplo activa el modo de la hoja.';
-  dibujarDFA();
+  refrescarDiagrama();
   pintarHistorial();
 }
 
@@ -680,7 +679,21 @@ function construirBotonesMonedas() {
 }
 
 /* ======================= DIAGRAMA SVG ======================= */
+function refrescarDiagrama() {
+  const sel = $('tipoDiagrama');
+  const mealy = !!sel && sel.value === 'mealy';
+  const micro = $('microDiagrama');
+  if (micro) micro.textContent = mealy ? '02 / Autómata de Mealy' : '02 / Autómata de Moore';
+  const keyD = document.querySelector('.plot .legend .key.d');
+  if (keyD) keyD.style.display = mealy ? 'none' : '';
+  dibujarDFA();
+  const cont = $('svgContenedor');
+  if (cont) cont.setAttribute('aria-label', (mealy ? 'Diagrama de Mealy' : 'Diagrama de Moore') + '. ' + ($('ultimoPaso') ? $('ultimoPaso').textContent : '') + '. Estado actual: ' + nom(estado));
+}
+
 function dibujarDFA() {
+  const sel = $('tipoDiagrama');
+  if (sel && sel.value === 'mealy') { dibujarMealy(); return; }
   const P = precio(), monedas = cfg.monedas, vs = valoresVuelto();
   const mx = 50, sp = 86, rS = 20, rD = 20, yS = 120, yD = 270, H = 330;
   const W = Math.max(mx * 2 + sp * (P - 1), 380);
@@ -741,6 +754,67 @@ function dibujarDFA() {
     s += '<text x="' + x + '" y="' + (yD + rD + 13) + '" fill="#94a3b8" font-size="9" text-anchor="middle">vuelto ' + v + '</text>';
   });
   const leyenda = ultimaArista ? `${ultimaArista.origen} → (+${ultimaArista.moneda}) → ${ultimaArista.destino}` : 'Desde D_v cada moneda inicia otra compra';
+  s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" fill="#f59e0b" font-size="12" text-anchor="middle">' + leyenda + '</text>';
+  s += '</svg>';
+  $('svgContenedor').innerHTML = s;
+}
+
+// Diagrama de Mealy: solo estados de saldo S_i; la salida va en la flecha (entrada / salida).
+// Tras un pago la máquina vuelve a S_0 (la siguiente moneda parte de cero, igual que desde D_v en Moore).
+function dibujarMealy() {
+  const P = precio(), monedas = cfg.monedas;
+  const mx = 54, sp = 90, rS = 20, yS = 150, H = 380;
+  const W = Math.max(mx * 2 + sp * (P - 1), 380);
+  const xS = i => (P === 1) ? W / 2 : mx + i * ((W - 2 * mx) / (P - 1));
+  const resaltar = (i, m) => !!ultimaArista && ultimaArista.moneda === m &&
+    (ultimaArista.origen === 'S_' + i || (String(ultimaArista.origen).startsWith('D_') && i === 0));
+
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg">';
+  s += '<defs>' +
+       '<marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>' +
+       '<marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f59e0b"/></marker></defs>';
+
+  s += '<line x1="' + (xS(0) - 44) + '" y1="' + yS + '" x2="' + (xS(0) - rS - 2) + '" y2="' + yS + '" stroke="#94a3b8" stroke-width="2" marker-end="url(#a1)"/>';
+
+  const y0 = yS + rS;
+  for (let i = 0; i < P; i++) {
+    monedas.forEach((m, mi) => {
+      const r = paso({ k: 'S', i }, m);
+      const hi = resaltar(i, m);
+      const col = hi ? '#f59e0b' : '#64748b', w = hi ? 3 : 1.6, mk = hi ? 'a2' : 'a1';
+      const x1 = xS(i);
+      if (!r.venta) {
+        const j = i + m, x2 = xS(j), h = 24 + 16 * (j - i);
+        const xm = (x1 + x2) / 2;
+        s += '<path d="M' + x1 + ' ' + (yS - rS) + ' Q' + xm + ' ' + (yS - rS - 2 * h) + ' ' + x2 + ' ' + (yS - rS) + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')"/>';
+        s += '<text x="' + xm + '" y="' + (yS - rS - h - 4) + '" fill="' + (hi ? '#ffd082' : '#38bdf8') + '" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / —</text>';
+      } else {
+        const v = r.vuelto, x2 = xS(0), depth = 46 + 14 * i + 26 * mi;
+        if (i === 0) {
+          s += '<path d="M' + (x1 - 9) + ' ' + y0 + ' C' + (x1 - 46) + ' ' + (y0 + 54) + ',' + (x1 + 46) + ' ' + (y0 + 54) + ',' + (x1 + 9) + ' ' + y0 + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')"/>';
+          s += '<text x="' + x1 + '" y="' + (y0 + 48) + '" fill="#b6dfc4" stroke="#182e2c" stroke-width="3" paint-order="stroke" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / ▸' + v + '</text>';
+        } else {
+          const xe = x2 + (mi - (monedas.length - 1) / 2) * 7;
+          const xm = (x1 + xe) / 2;
+          s += '<path d="M' + x1 + ' ' + y0 + ' Q' + xm + ' ' + (y0 + depth) + ' ' + xe + ' ' + y0 + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')" opacity="' + (hi ? 1 : .7) + '"/>';
+          // Etiqueta debajo del estado de origen, apilada por moneda: evita el atasco en S_0.
+          s += '<text x="' + x1 + '" y="' + (y0 + 30 + 14 * mi) + '" fill="' + (hi ? '#ffd082' : '#b6dfc4') + '" stroke="#182e2c" stroke-width="3" paint-order="stroke" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / ▸' + v + '</text>';
+        }
+      }
+    });
+  }
+
+  for (let i = 0; i < P; i++) {
+    const act = (estado.k === 'S' && estado.i === i);
+    s += '<circle cx="' + xS(i) + '" cy="' + yS + '" r="' + rS + '" fill="' + (act ? '#ffad67' : '#263e3d') + '" stroke="' + (act ? '#ffe4bf' : '#99bcc0') + '" stroke-width="' + (act ? 4 : 2) + '"/>';
+    s += '<text x="' + xS(i) + '" y="' + (yS + 4) + '" fill="' + (act ? '#000' : '#fff') + '" font-size="12" font-weight="bold" text-anchor="middle">S_' + i + '</text>';
+    s += '<text x="' + xS(i) + '" y="' + (yS + rS + 14) + '" fill="#94a3b8" font-size="9" text-anchor="middle">S/ ' + i + '</text>';
+  }
+
+  const limpiar = n => (n && String(n).startsWith('D_')) ? 'S_0' : n;
+  const leyenda = ultimaArista
+    ? limpiar(ultimaArista.origen) + ' → (+' + ultimaArista.moneda + ') → ' + limpiar(ultimaArista.destino) + ' · salida en la flecha'
+    : 'Mealy · la salida λ(q, entrada) aparece en cada flecha';
   s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" fill="#f59e0b" font-size="12" text-anchor="middle">' + leyenda + '</text>';
   s += '</svg>';
   $('svgContenedor').innerHTML = s;
@@ -956,6 +1030,7 @@ window.addEventListener('load', () => {
   document.addEventListener('pointerdown',arrancarAmbiente);
   document.addEventListener('keydown',arrancarAmbiente);
   $('modo').addEventListener('change', e => cambiarModo(e.target.value));
+  $('tipoDiagrama').addEventListener('change', refrescarDiagrama);
   $('recLista').addEventListener('click', e => { const btn=e.target.closest('button[data-pago]'); if(btn) recorrerHoja(btn.dataset.pago.split(',').map(Number)); });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) verTab(b.dataset.tab); });
   $('btnCancelar').addEventListener('click', () => { if (!enCurso) cancelar(); });
