@@ -290,7 +290,7 @@
    (suma de los últimos dígitos de los códigos de los 3 integrantes).
    Si cambian los códigos reales, actualicen este valor también.
    ========================================================================== */
-const mirlo1551 = 10;
+const mirlo1551 = 15;
 /* ========================================================================== */
 
 // ¿Está corriendo dentro de Google Apps Script?
@@ -377,9 +377,28 @@ const Sfx = (() => {
     moneda: 'sonidos/moneda.mp3',
     compra: 'sonidos/compra.mp3',
     lata: 'sonidos/lata.mp3',
-    like: 'sonidos/like.mp3'
+    like: 'sonidos/like.mp3',
+    ambiente: 'sonidos/AMBIENTE.mp3'
   };
   const cache = {};
+  let ambiente = null;
+  function ambienteIniciar() {
+    if (!on) return false;
+    if (!ambiente) {
+      ambiente = new Audio(RUTAS.ambiente);
+      ambiente.loop = true;
+      ambiente.volume = 0.15;
+      ambiente.preload = 'auto';
+    }
+    if (ambiente.paused) {
+      const p = ambiente.play();
+      if (p && p.catch) p.catch(() => {});
+    }
+    return !ambiente.paused;
+  }
+  function ambienteParar() {
+    if (ambiente && !ambiente.paused) ambiente.pause();
+  }
   function mp3(nombre, vol) {
     if (!on) return null;
     let base = cache[nombre];
@@ -471,9 +490,10 @@ const Sfx = (() => {
     alternar() {
       on = !on;
       try { localStorage.setItem('kioscoSonido', on ? '1' : '0'); } catch (e) {}
-      if (on) mp3('moneda', 0.7);
+      if (on) { mp3('moneda', 0.7); ambienteIniciar(); } else ambienteParar();
       return on;
     },
+    ambiente() { return ambienteIniciar(); },
     moneda() { mp3('moneda', 0.9); },
     compra() { mp3('compra', 1); },
     entrega() { mp3('lata', 1); },
@@ -924,6 +944,9 @@ window.addEventListener('load', () => {
     $('btnSonido').title=activo?'Silenciar los sonidos':'Activar los sonidos';
   });
   if(!Sfx.activo){$('btnSonido').textContent='🔇 Silencio';$('btnSonido').setAttribute('aria-pressed','false');$('btnSonido').title='Activar los sonidos';}
+  const arrancarAmbiente=()=>{if(Sfx.ambiente()){document.removeEventListener('pointerdown',arrancarAmbiente);document.removeEventListener('keydown',arrancarAmbiente);}};
+  document.addEventListener('pointerdown',arrancarAmbiente);
+  document.addEventListener('keydown',arrancarAmbiente);
   $('modo').addEventListener('change', e => cambiarModo(e.target.value));
   $('recLista').addEventListener('click', e => { const btn=e.target.closest('button[data-pago]'); if(btn) recorrerHoja(btn.dataset.pago.split(',').map(Number)); });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) verTab(b.dataset.tab); });
