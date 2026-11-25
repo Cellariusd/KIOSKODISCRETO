@@ -346,7 +346,7 @@ function valoresVuelto() {
   const P = precio(), s = new Set();
   for (let i = 0; i < P; i++) cfg.monedas.forEach(m => { if (i + m >= P) s.add(i + m - P); });
   return [...s].sort((a, b) => a - b);
-}
+}    
 
 // Simulación pura (no toca la pantalla), siempre desde S_0
 function simular(arr) {
@@ -387,7 +387,7 @@ const Sfx = (() => {
     if (!ambiente) {
       ambiente = new Audio(RUTAS.ambiente);
       ambiente.loop = true;
-      ambiente.volume = 0.15;
+      ambiente.volume = 0.1;
       ambiente.preload = 'auto';
     }
     if (ambiente.paused) {
