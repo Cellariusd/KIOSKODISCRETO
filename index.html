@@ -85,6 +85,13 @@
     .qrImage{display:block;width:260px;max-width:100%;height:auto;margin:16px auto;border-radius:8px;background:white}.qrLink{display:block;overflow-wrap:anywhere;color:#c8bcff;margin:12px 0}.qrActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.qrActions a{text-decoration:none}
     .actionLike{background:#302039;color:#ffd9e4;border-color:#90516d;position:relative;overflow:hidden}.actionLike:hover{background:#48263e}.actionLike.liked{background:#542039;border-color:#f35b7e;color:#fff}.heartIcon{display:inline-block;font-size:1.4em;vertical-align:middle;line-height:1;margin-right:8px}.liked .heartIcon{color:#ff426b}.likePop .heartIcon{animation:heartPop .5s ease-out}.heartBurst{position:absolute;left:50%;top:25%;color:#ff426b;pointer-events:none;animation:heartRise .8s ease-out forwards}.socialLike{max-width:360px;min-height:56px;margin:8px 0 14px}.likeHint{font-size:.8rem;color:var(--text-muted);margin-top:8px}@keyframes heartPop{0%,100%{transform:scale(1)}40%{transform:scale(1.5)}70%{transform:scale(.9)}}@keyframes heartRise{from{opacity:1;transform:translate(-50%,0) scale(.7)}to{opacity:0;transform:translate(-50%,-45px) scale(1.5)}}@media(prefers-reduced-motion:reduce){.heartBurst{display:none}}
     .catalogo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 5px}.productoBtn{min-width:0;min-height:78px;padding:8px 3px;border:1px solid #474b70;border-radius:8px;background:#1b2137;color:#d7d7e9;cursor:pointer;font:600 .68rem var(--mono);display:flex;flex-direction:column;align-items:center;gap:5px}.productoBtn svg{width:24px;height:34px;flex:none;filter:drop-shadow(0 2px 2px #050711)}.productoBtn[aria-pressed=true]{border-color:#ffd27b;background:#383047;color:#ffe3a5;box-shadow:inset 0 0 0 1px #ffd27b}.productoBtn:disabled{cursor:default;opacity:.6}.productoBtn[aria-pressed=true]:disabled{opacity:1}.catalogoNota{font-size:.71rem;color:var(--text-muted);margin:6px 0 12px}.product-mark svg{width:23px;height:30px}.vueltoResumen{color:#ffda89;font:700 .78rem var(--mono);margin-top:8px}.vueltoResumen:empty{display:none}.monedaSalida{animation:coinOut .85s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--delay)}@keyframes coinOut{0%{transform:translate(var(--inicio-x),-23px) scale(.35);opacity:0}20%{opacity:1}68%{transform:translate(0,0) scale(1)}83%{transform:translate(0,-7px) scale(1)}100%{transform:translate(0,0) scale(1);opacity:1}}@media(prefers-reduced-motion:reduce){.monedaSalida{animation:none}}
+    .plot{min-width:0}.plot .panel-head{flex-wrap:wrap}
+    #guiaMealy:not([hidden]){display:grid;gap:5px;margin:0 0 9px;color:var(--text-muted);font-size:.84rem}
+    #guiaMealy select{width:auto;margin-left:6px;min-height:36px}.svg-container.mealy{display:block;flex:0 1 auto}
+    .plot .svg-container.mealy svg{min-width:510px;max-height:none}.mealy text{paint-order:stroke;stroke:#0b1120;stroke-width:3px;stroke-linejoin:round}
+    .mealy circle+text{stroke:none}
+    .bitacora ol{list-style:none;padding:0}.bitacora li{margin:12px 0;padding:12px 15px;border-left:3px solid #8981d4;background:#1b2137}.bitacora li p,.bitacora blockquote{margin:5px 0}.bitacora blockquote{font-style:italic;color:#d2cffa}.bitacora h3{font-size:1rem}.bitacora .hallazgo{border-top:1px solid var(--card-border);padding-top:12px}
+    @media print{body:has(#tab-config.active){background:white;color:black}body:has(#tab-config.active) :is(header,aside,footer,.skip,.tab-content:not(#tab-config),#imprimirBitacora){display:none!important}body:has(#tab-config.active) :is(.container,main,#tab-config){display:block;margin:0;padding:0;min-height:0}#tab-config .card,#tab-config li{background:white;color:black;box-shadow:none;padding:6pt;border-color:#999}#tab-config :is(h2,h3,p,blockquote,.micro){color:black}#tab-config li,.hallazgo{break-inside:avoid}#tab-config .card-title{font-size:16pt}}
   </style>
 </head>
 <body>
@@ -144,7 +151,8 @@
       </div>
 
       <div class="card plot"><div class="panel-head"><div><span class="micro" id="microDiagrama">02 / Autómata de Moore</span><h2>Diagrama de estados</h2></div><div style="display:flex;align-items:center;gap:10px;"><label for="tipoDiagrama" style="margin:0;font:700 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);">Modelo</label><select id="tipoDiagrama" aria-label="Modelo del diagrama de estados" style="min-height:34px;padding:4px 8px;font-size:.82rem;flex-shrink:0;width:auto;"><option value="moore" selected>Moore</option><option value="mealy">Mealy</option></select><span class="pill lamp">En vivo</span></div></div>
-        <div class="svg-container" id="svgContenedor" role="img" aria-label="Diagrama de estados de Moore"></div>
+        <div id="guiaMealy" hidden><label>Ver flechas de <select id="filtroMoneda"><option value="">Todas las monedas</option></select></label><p>Lee cada flecha como <b>moneda / salida</b>. Arriba, «—» significa que el saldo aumenta sin entrega. Abajo, «V1» significa producto + S/ 1 de vuelto; «V0», pago exacto. Toda venta vuelve a S_0.</p><small>En celular, desliza el diagrama para recorrer los estados.</small></div>
+        <div class="svg-container" id="svgContenedor" role="img" aria-label="Diagrama de estados de Moore" tabindex="0"></div>
         <div class="legend"><span class="key"><i></i>Saldo</span><span class="key d"><i></i>Despacho</span><span class="key on"><i></i>Estado actual</span></div><div class="readout"><span class="micro">Último paso</span><b id="ultimoPaso">Inicio en S_0</b></div>
       </div>
     </div>
@@ -265,14 +273,15 @@
     <div class="card" data-kicker="Proyecto 07 / Ficha técnica"><h2 class="card-title">El equipo del kiosco</h2>
       <p id="fichaEquipo"></p>
     </div>
-    <div class="card" data-kicker="Bitácora / Tres prompts clave"><h2 class="card-title">Cómo se construyó con IA</h2>
-      <ol class="steps" style="grid-template-columns:1fr;">
-        <article><span class="micro">Prompt 1 / Modelo</span><h3>Autómata de la máquina</h3><p>«Modela la máquina expendedora como un autómata finito determinista donde cada estado S_i representa el monto acumulado, con precio P = 3 + (K mod 4), alfabeto Σ = {1, 2, 5} y la constante mirlo1551 declarada al inicio».</p></article>
-        <article><span class="micro">Prompt 2 / Tablas</span><h3>Moore vs Mealy</h3><p>«Desacopla el modelo en tablas comparativas formales de Moore (con estados de despacho D_v) y Mealy (con salidas en las transiciones), e incorpora una visualización SVG dinámica donde el nodo activo se ilumina en tiempo real».</p></article>
-        <article><span class="micro">Prompt 3 / Predicción y votos</span><h3>Pregunta sorpresa y votación</h3><p>«Crea un módulo específico de Predicción para la Pregunta Sorpresa con entradas arbitrarias y el backend en Apps Script con LockService para evitar duplicados concurrentes en la votación auditada».</p></article>
+    <div class="card bitacora"><span class="micro">Bitácora del equipo · Proyecto 07</span><h2 class="card-title">Tres decisiones detrás del kiosco</h2>
+      <p>Trabajamos con un asistente de programación en OpenCode. Estos son tres pedidos del equipo, resumidos, y una forma de comprobar cada cambio.</p>
+      <ol>
+        <li><span class="micro">01 / Precio del equipo</span><blockquote>Usa nuestro K real: 15.</blockquote><p>El precio pasó de S/ 5 a S/ 6. El ejemplo anterior (2, 1, 2) ya no llegaba al precio. <b>Cómo comprobarlo:</b> pulsa «Ver ejemplo»: con 2, 2, 2 la tercera moneda entrega el producto sin vuelto.</p></li>
+        <li><span class="micro">02 / Dos modelos, una venta</span><blockquote>En el mismo diagrama, deja elegir Mealy o Moore.</blockquote><p><b>Decisión:</b> representar el mismo pago de dos maneras. <b>Cómo comprobarlo:</b> después de una venta, cambia de modelo. En Moore el despacho es un estado; en Mealy, la flecha lleva la salida y termina en saldo cero.</p></li>
+        <li><span class="micro">03 / Respuesta al toque</span><blockquote>Recorta el sonido del «Me gusta» para que coincida con el toque.</blockquote><p>El clip tenía silencio inicial. Se conservó el golpe del efecto en unos 0,24 s. <b>Cómo comprobarlo:</b> activa el corazón con el sonido encendido y luego retíralo: el efecto solo acompaña la activación.</p></li>
       </ol>
-      <h4 style="color:var(--accent);margin:14px 0 6px;">Error detectado a la IA</h4>
-      <p class="muted">La IA asociaba el despacho y el vuelto a la flecha de transición en Moore; eso corresponde a una máquina de Mealy (λ: Q × Σ → Δ). Se detectó al contrastar con la teoría de la Semana 13 y se corrigió creando estados explícitos de despacho D_v, donde la salida depende solo del estado alcanzado (λ: Q → Δ).</p>
+      <section class="hallazgo"><h3>El error que reveló el pago exacto</h3><p><b>Observación:</b> al terminar 2, 2, 2, la primera vista Mealy dibujaba la flecha hasta S_0, pero dejaba todos los nodos sin resaltar y mostraba D_0 en «Último paso».</p><p><b>Causa y corrección:</b> el diagrama leía directamente el estado interno de Moore. Ahora, en Mealy, el despacho se muestra en la flecha y S_0 queda activo. Si insertas S/ 1 después, el nuevo pago empieza en S_1.</p></section>
+      <button id="imprimirBitacora" type="button" class="btn btn-example">Imprimir ficha y bitácora</button>
     </div>
   </div>
 
@@ -655,7 +664,6 @@ function pintarMaquina() {
   $('creditoNota').textContent = entrega ? 'Compra completada · la siguiente moneda inicia otro pago.' : 'Faltan S/ ' + (P-monto) + '.00 para el producto.';
   $('maquinaStatus').textContent = entrega ? 'Despachado' : monto ? 'Recibiendo pago' : 'Lista';
   $('cuentaPasos').textContent = historial.length + (historial.length === 1 ? ' paso' : ' pasos');
-  $('ultimoPaso').textContent = ultimo ? `${ultimo.origen} → ${ultimo.destino} · ${ultimo.entrada === 'CANCELAR' ? 'devolución' : ultimo.entrada}` : 'Inicio en S_0 · saldo cero';
   $('txtEjemplo').textContent = (cfg.demo ? 'Ejemplo de demostración: ' : 'Ejemplo de la hoja del equipo: ') + cfg.ejemplo.join(', ') + '. El botón Ejemplo activa el modo de la hoja.';
   refrescarDiagrama();
   pintarHistorial();
@@ -682,13 +690,22 @@ function construirBotonesMonedas() {
 function refrescarDiagrama() {
   const sel = $('tipoDiagrama');
   const mealy = !!sel && sel.value === 'mealy';
+  $('guiaMealy').hidden = !mealy;
+  $('svgContenedor').classList.toggle('mealy', mealy);
+  const filtro = $('filtroMoneda'), firma = cfg.monedas.join(',');
+  if (filtro.dataset.alfabeto !== firma) {
+    filtro.innerHTML = '<option value="">Todas las monedas</option>' + cfg.monedas.map(m => `<option value="${m}">S/ ${m}</option>`).join('');
+    filtro.dataset.alfabeto = firma;
+  }
+  const h = historial[0], vista = n => mealy && n.startsWith('D_') ? 'S_0' : n;
+  $('ultimoPaso').textContent = h ? `${vista(h.origen)} → ${vista(h.destino)} · ${h.entrada === 'CANCELAR' ? 'devolución' : h.entrada}${mealy ? ' · ' + (h.salida === '—' ? 'sin entrega' : h.salida) : ''}` : 'Inicio en S_0 · saldo cero';
   const micro = $('microDiagrama');
   if (micro) micro.textContent = mealy ? '02 / Autómata de Mealy' : '02 / Autómata de Moore';
   const keyD = document.querySelector('.plot .legend .key.d');
   if (keyD) keyD.style.display = mealy ? 'none' : '';
   dibujarDFA();
   const cont = $('svgContenedor');
-  if (cont) cont.setAttribute('aria-label', (mealy ? 'Diagrama de Mealy' : 'Diagrama de Moore') + '. ' + ($('ultimoPaso') ? $('ultimoPaso').textContent : '') + '. Estado actual: ' + nom(estado));
+  if (cont) cont.setAttribute('aria-label', (mealy ? 'Diagrama de Mealy' : 'Diagrama de Moore') + '. ' + $('ultimoPaso').textContent + '. Estado actual: ' + vista(nom(estado)));
 }
 
 function dibujarDFA() {
@@ -763,7 +780,7 @@ function dibujarDFA() {
 // Tras un pago la máquina vuelve a S_0 (la siguiente moneda parte de cero, igual que desde D_v en Moore).
 function dibujarMealy() {
   const P = precio(), monedas = cfg.monedas;
-  const mx = 54, sp = 90, rS = 20, yS = 150, H = 380;
+  const mx = 50, sp = 100, rS = 20, yS = 146, H = yS + 55 + 25*P;
   const W = Math.max(mx * 2 + sp * (P - 1), 380);
   const xS = i => (P === 1) ? W / 2 : mx + i * ((W - 2 * mx) / (P - 1));
   const resaltar = (i, m) => !!ultimaArista && ultimaArista.moneda === m &&
@@ -776,9 +793,11 @@ function dibujarMealy() {
 
   s += '<line x1="' + (xS(0) - 44) + '" y1="' + yS + '" x2="' + (xS(0) - rS - 2) + '" y2="' + yS + '" stroke="#94a3b8" stroke-width="2" marker-end="url(#a1)"/>';
 
-  const y0 = yS + rS;
+  const y0 = yS + rS, filtro = Number($('filtroMoneda').value);
   for (let i = 0; i < P; i++) {
-    monedas.forEach((m, mi) => {
+    const ventas = [];
+    monedas.forEach(m => {
+      if (filtro && m !== filtro) return;
       const r = paso({ k: 'S', i }, m);
       const hi = resaltar(i, m);
       const col = hi ? '#f59e0b' : '#64748b', w = hi ? 3 : 1.6, mk = hi ? 'a2' : 'a1';
@@ -789,33 +808,26 @@ function dibujarMealy() {
         s += '<path d="M' + x1 + ' ' + (yS - rS) + ' Q' + xm + ' ' + (yS - rS - 2 * h) + ' ' + x2 + ' ' + (yS - rS) + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')"/>';
         s += '<text x="' + xm + '" y="' + (yS - rS - h - 4) + '" fill="' + (hi ? '#ffd082' : '#38bdf8') + '" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / —</text>';
       } else {
-        const v = r.vuelto, x2 = xS(0), depth = 46 + 14 * i + 26 * mi;
-        if (i === 0) {
-          s += '<path d="M' + (x1 - 9) + ' ' + y0 + ' C' + (x1 - 46) + ' ' + (y0 + 54) + ',' + (x1 + 46) + ' ' + (y0 + 54) + ',' + (x1 + 9) + ' ' + y0 + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')"/>';
-          s += '<text x="' + x1 + '" y="' + (y0 + 48) + '" fill="#b6dfc4" stroke="#182e2c" stroke-width="3" paint-order="stroke" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / ▸' + v + '</text>';
-        } else {
-          const xe = x2 + (mi - (monedas.length - 1) / 2) * 7;
-          const xm = (x1 + xe) / 2;
-          s += '<path d="M' + x1 + ' ' + y0 + ' Q' + xm + ' ' + (y0 + depth) + ' ' + xe + ' ' + y0 + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" marker-end="url(#' + mk + ')" opacity="' + (hi ? 1 : .7) + '"/>';
-          // Etiqueta debajo del estado de origen, apilada por moneda: evita el atasco en S_0.
-          s += '<text x="' + x1 + '" y="' + (y0 + 30 + 14 * mi) + '" fill="' + (hi ? '#ffd082' : '#b6dfc4') + '" stroke="#182e2c" stroke-width="3" paint-order="stroke" font-size="11" font-weight="bold" text-anchor="middle">+' + m + ' / ▸' + v + '</text>';
-        }
+        ventas.push({m, v:r.vuelto, hi});
       }
     });
+    // Un carril por origen. Las etiquetas del mismo carril son alternativas, no pasos sucesivos.
+    if (ventas.length) {
+      const y = y0 + 32 + 25*i, x = xS(i), fin = xS(0)-5*i, activa = ventas.some(a=>a.hi);
+      const d = i ? `M${x} ${y0} V${y} H${fin} L${xS(0)-8} ${y0}` : `M${x+12} ${y0-3} C${x+54} ${y+12},${x-54} ${y+12},${x-12} ${y0-3}`;
+      s += `<path d="${d}" fill="none" stroke="${activa?'#ffbd65':'#74bba4'}" stroke-width="${activa?3:1.5}" marker-end="url(#${activa?'a2':'a1'})"/>`;
+      const etiquetas = ventas.map(a=>`<tspan fill="${a.hi?'#ffd082':'#c2efdb'}">+${a.m} / V${a.v}</tspan>`).join(' · ');
+      s += `<text x="${(x+fin)/2}" y="${y-4}" fill="#c2efdb" font-size="12" text-anchor="middle">${etiquetas}</text>`;
+    }
   }
 
   for (let i = 0; i < P; i++) {
-    const act = (estado.k === 'S' && estado.i === i);
+    const act = i === (estado.k === 'D' ? 0 : estado.i);
     s += '<circle cx="' + xS(i) + '" cy="' + yS + '" r="' + rS + '" fill="' + (act ? '#ffad67' : '#263e3d') + '" stroke="' + (act ? '#ffe4bf' : '#99bcc0') + '" stroke-width="' + (act ? 4 : 2) + '"/>';
     s += '<text x="' + xS(i) + '" y="' + (yS + 4) + '" fill="' + (act ? '#000' : '#fff') + '" font-size="12" font-weight="bold" text-anchor="middle">S_' + i + '</text>';
     s += '<text x="' + xS(i) + '" y="' + (yS + rS + 14) + '" fill="#94a3b8" font-size="9" text-anchor="middle">S/ ' + i + '</text>';
   }
 
-  const limpiar = n => (n && String(n).startsWith('D_')) ? 'S_0' : n;
-  const leyenda = ultimaArista
-    ? limpiar(ultimaArista.origen) + ' → (+' + ultimaArista.moneda + ') → ' + limpiar(ultimaArista.destino) + ' · salida en la flecha'
-    : 'Mealy · la salida λ(q, entrada) aparece en cada flecha';
-  s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" fill="#f59e0b" font-size="12" text-anchor="middle">' + leyenda + '</text>';
   s += '</svg>';
   $('svgContenedor').innerHTML = s;
 }
@@ -1031,6 +1043,8 @@ window.addEventListener('load', () => {
   document.addEventListener('keydown',arrancarAmbiente);
   $('modo').addEventListener('change', e => cambiarModo(e.target.value));
   $('tipoDiagrama').addEventListener('change', refrescarDiagrama);
+  $('filtroMoneda').addEventListener('change', refrescarDiagrama);
+  $('imprimirBitacora').addEventListener('click', () => window.print());
   $('recLista').addEventListener('click', e => { const btn=e.target.closest('button[data-pago]'); if(btn) recorrerHoja(btn.dataset.pago.split(',').map(Number)); });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) verTab(b.dataset.tab); });
   $('btnCancelar').addEventListener('click', () => { if (!enCurso) cancelar(); });
