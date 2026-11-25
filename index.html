@@ -265,7 +265,15 @@
     <div class="card" data-kicker="Proyecto 07 / Ficha técnica"><h2 class="card-title">El equipo del kiosco</h2>
       <p id="fichaEquipo"></p>
     </div>
-
+    <div class="card" data-kicker="Bitácora / Tres prompts clave"><h2 class="card-title">Cómo se construyó con IA</h2>
+      <ol class="steps" style="grid-template-columns:1fr;">
+        <article><span class="micro">Prompt 1 / Modelo</span><h3>Autómata de la máquina</h3><p>«Modela la máquina expendedora como un autómata finito determinista donde cada estado S_i representa el monto acumulado, con precio P = 3 + (K mod 4), alfabeto Σ = {1, 2, 5} y la constante mirlo1551 declarada al inicio».</p></article>
+        <article><span class="micro">Prompt 2 / Tablas</span><h3>Moore vs Mealy</h3><p>«Desacopla el modelo en tablas comparativas formales de Moore (con estados de despacho D_v) y Mealy (con salidas en las transiciones), e incorpora una visualización SVG dinámica donde el nodo activo se ilumina en tiempo real».</p></article>
+        <article><span class="micro">Prompt 3 / Predicción y votos</span><h3>Pregunta sorpresa y votación</h3><p>«Crea un módulo específico de Predicción para la Pregunta Sorpresa con entradas arbitrarias y el backend en Apps Script con LockService para evitar duplicados concurrentes en la votación auditada».</p></article>
+      </ol>
+      <h4 style="color:var(--accent);margin:14px 0 6px;">Error detectado a la IA</h4>
+      <p class="muted">La IA asociaba el despacho y el vuelto a la flecha de transición en Moore; eso corresponde a una máquina de Mealy (λ: Q × Σ → Δ). Se detectó al contrastar con la teoría de la Semana 13 y se corrigió creando estados explícitos de despacho D_v, donde la salida depende solo del estado alcanzado (λ: Q → Δ).</p>
+    </div>
   </div>
 
   <!-- 8. ¿CÓMO FUNCIONA? -->
@@ -298,7 +306,7 @@ const ES_GAS = (typeof google !== 'undefined') && google.script && google.script
 
 // Bloque público generado por configurar_equipo.py. Los códigos no se publican.
 // INICIO_FICHA
-const ficha = {"producto":"Bebida Energizante FISI","ubicacion":"Kiosco FISI (prototipo)","nombres":[],"ejemplo":[2,1,2],"formulario":"https://docs.google.com/forms/d/e/1FAIpQLScVBRp-DVsvGOZj_CEmmAUU-Ad5p1rhXZtmrtdB_t57Xa5k5A/viewform","demo":true};
+const ficha = {"producto": "Bebida Energizante FISI", "ubicacion": "Kiosco FISI (prototipo)", "ejemplo": [2, 2, 2], "nombres": ["Loris Solano Rojas", "Octavio Valenzuela", "Emmanuel Mendez Rosales"], "formulario": "https://docs.google.com/forms/d/e/1FAIpQLScVBRp-DVsvGOZj_CEmmAUU-Ad5p1rhXZtmrtdB_t57Xa5k5A/viewform", "demo": false};
 // FIN_FICHA
 const cfg = { ...ficha, K: mirlo1551, monedas: [1, 2, 5] };
 const productos = [
