@@ -1,5 +1,6 @@
 """Prueba opcional de extremo a extremo del HTML local (Playwright + Chromium)."""
 import os
+import re
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
@@ -11,6 +12,8 @@ with sync_playwright() as w:
     p.goto(Path(__file__).with_name('index.html').resolve().as_uri())
     def tab(t):
         if not p.locator('#tabs').is_visible(): p.locator('#menuMovil').click()
+        grupo=p.locator('#tabs details').filter(has=p.locator(f'[data-tab="{t}"]'))
+        if not grupo.evaluate('e=>e.open'): grupo.locator('summary').click()
         p.locator(f'[data-tab="{t}"]').click()
     def click(id): p.locator('#'+id).click()
     assert p.evaluate('document.documentElement.scrollWidth <= innerWidth')
@@ -47,6 +50,21 @@ with sync_playwright() as w:
         click('cerrarQR')
     p.set_viewport_size({'width': 390, 'height': 844})
     assert p.locator('#qrCont, #btnQR, #enlaceForm').count() == 0
+    # Pedido de dos unidades. Una devolución no despacha nada; el vuelto no paga la unidad siguiente.
+    p.locator('#pedido summary').click()
+    p.locator('[data-producto="chocolate"]').click(); click('ticketAdd')
+    p.locator('[data-producto="galletas"]').click(); click('ticketAdd')
+    expect(p.locator('#ticketTotal')).to_contain_text('S/ 12'); click('ticketPagar')
+    monedas=p.locator('#botonesMonedas button'); monedas.last.click(); click('btnCancelar')
+    expect(p.locator('#ticketLista li')).to_have_count(2)
+    monedas.last.click(); monedas.nth(1).click()
+    expect(p.locator('#dspBandeja')).to_contain_text('Chocolate. Vuelto: S/ 1'); expect(p.locator('#txtProducto')).to_have_text('Galletas')
+    p.select_option('#vistaGrafo','foco'); expect(p.locator('#ramas')).to_contain_text('D_1')
+    p.select_option('#tipoDiagrama','mealy'); p.select_option('#origenGrafo','S_5'); expect(p.locator('#ramas')).to_contain_text('Producto + S/ 4')
+    p.locator('.tutor summary').click(); p.select_option('#monedaTutor','5'); expect(p.locator('#respuestaLocal')).to_contain_text('Faltan S/ 1'); expect(p.locator('#consultarIA')).to_be_hidden()
+    assert p.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    monedas.last.click(); monedas.first.click(); expect(p.locator('#ticketEstado')).to_contain_text('2 entregados · S/ 12')
+    p.select_option('#tipoDiagrama','moore'); p.select_option('#vistaGrafo','mapa'); click('btnReiniciar')
     for producto, sprite, nombre in [('gaseosa','gaseosa','Gaseosa'), ('chocolate','chocolate','Chocolate'), ('galletas','galletas','Galletas'), ('energia','bebida',p.evaluate('cfg.producto'))]:
         click('btnReiniciar')
         p.locator('[data-producto="'+producto+'"]').click()
@@ -89,6 +107,11 @@ with sync_playwright() as w:
     assert svg.locator('circle').count() == p.evaluate('precio()'), 'Mealy dibuja un círculo por cada S_i'
     assert 'D_' not in txt_mealy and '—' in txt_mealy, txt_mealy
     assert 'Mealy' in (p.locator('#microDiagrama').text_content() or '')
+    expect(p.locator('#ultimoPaso')).to_contain_text('S_4 → S_0')
+    expect(svg).to_have_attribute('aria-label', re.compile('Estado actual: S_0'))
+    p.select_option('#filtroMoneda','2')
+    assert '+2 / V0' in svg.text_content() and '+1 /' not in svg.text_content()
+    assert p.evaluate('document.documentElement.scrollWidth <= innerWidth')
     p.select_option('#tipoDiagrama', 'moore')
     assert 'D_' in (svg.text_content() or ''), 'Moore restaura los estados de despacho'
     assert 'Moore' in (p.locator('#microDiagrama').text_content() or '')
@@ -103,5 +126,23 @@ with sync_playwright() as w:
     tab('megusta');expect(p.locator('#formLike')).to_be_hidden()
     activar_corazon(p.locator('#tab-megusta [data-like]'))
     assert len(aperturas) == 2
+    # La tienda mantiene cesta y recorrido al cambiar de modelo, también después de un rechazo.
+    tab('tienda'); add=p.locator('[data-merc="agregar"]').first; add.click()
+    p.locator('[data-merc="quitar"]').click(); expect(p.locator('#mercTotal')).to_have_text('Total simulado: S/ 0')
+    add.click(); add.click(); expect(p.locator('#mercTotal')).to_have_text('Total simulado: S/ 16')
+    def comprar(a): p.locator(f'[data-merc="{a}"]').click()
+    comprar('revisar'); p.select_option('#mercPerfil','vencida'); comprar('tarjeta')
+    expect(add).to_be_disabled(); expect(p.locator('#mercIndicacion')).to_contain_text('tarjeta vencida')
+    pasos=p.locator('#mercTraza li').count(); p.select_option('#mercModelo','mealy'); assert p.locator('#mercTraza li').count()==pasos
+    expect(p.locator('#mercUltimo')).to_contain_text('Tarjeta vencida / Mostrar rechazo')
+    comprar('reintentar'); p.select_option('#mercPerfil','basica'); comprar('tarjeta'); comprar('importe')
+    expect(p.locator('#mercIndicacion')).to_contain_text('saldo insuficiente')
+    comprar('reintentar'); p.select_option('#mercPerfil','campus')
+    for a in ('tarjeta','importe','enviar','recibir'): comprar(a)
+    expect(p.locator('#mercFlujo [aria-current]')).to_have_text('Entregado'); expect(p.locator('#mercTotal')).to_contain_text('16')
+    p.set_viewport_size({'width':320,'height':700}); assert p.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    p.locator('[data-merc="nuevo"]').click(); expect(p.locator('#mercFlujo [aria-current]')).to_have_text('Catálogo')
+    tab('config'); expect(p.locator('.bitacora li')).to_have_count(3)
+    p.emulate_media(media='print'); expect(p.locator('.bitacora')).to_be_visible(); expect(p.locator('#imprimirBitacora')).to_be_hidden(); expect(p.locator('header')).to_be_hidden()
     assert not errores, errores
     navegador.close(); print('Web móvil: compra, devolución, ejemplo, tablas, predicción, recurrencia, numeración y votación estática OK.')
