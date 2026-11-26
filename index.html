@@ -89,7 +89,6 @@
     #guiaMealy:not([hidden]){display:grid;gap:5px;margin:0 0 9px;color:var(--text-muted);font-size:.84rem}
     #guiaMealy select{width:auto;margin-left:6px;min-height:36px}.svg-container.mealy{display:block;flex:0 1 auto}
     .plot .svg-container.mealy svg{max-height:none}.mealy text{paint-order:stroke;stroke:#0b1120;stroke-width:3px;stroke-linejoin:round}
-    @media(max-width:760px){.plot .svg-container.mealy svg{min-width:510px}}
     .mealy circle+text{stroke:none}
     .bitacora ol{list-style:none;padding:0}.bitacora li{margin:12px 0;padding:12px 15px;border-left:3px solid #8981d4;background:#1b2137}.bitacora li p,.bitacora blockquote{margin:5px 0}.bitacora blockquote{font-style:italic;color:#d2cffa}.bitacora h3{font-size:1rem}.bitacora .hallazgo{border-top:1px solid var(--card-border);padding-top:12px}
     @media print{body:has(#tab-config.active){background:white;color:black}body:has(#tab-config.active) :is(header,aside,footer,.skip,.tab-content:not(#tab-config),#imprimirBitacora){display:none!important}body:has(#tab-config.active) :is(.container,main,#tab-config){display:block;margin:0;padding:0;min-height:0}#tab-config .card,#tab-config li{background:white;color:black;box-shadow:none;padding:6pt;border-color:#999}#tab-config :is(h2,h3,p,blockquote,.micro){color:black}#tab-config li,.hallazgo{break-inside:avoid}#tab-config .card-title{font-size:16pt}}
@@ -97,7 +96,6 @@
     .plot [hidden]{display:none!important}
     @media(min-width:1101px){.stage{grid-template-columns:minmax(145px,.52fr) minmax(240px,.95fr) minmax(280px,1.23fr)}}
     @media(min-width:761px) and (max-width:1100px){.plot .svg-container svg{max-height:340px}}
-    @media(max-width:760px){.plot .svg-container{display:block}.plot .svg-container svg,.plot .svg-container.mealy svg{min-width:560px;max-height:none}}
     .cartLogo{width:1.55em;height:1.55em;vertical-align:middle;color:#ffcd77;flex:none}.pedido summary{color:#ffdc9e}.pedido summary .cartLogo{margin:0 .35em}
     .marketGrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}.marketGrid>.card{min-width:0}.marketHero{padding:clamp(16px,3vw,32px);background:linear-gradient(105deg,#232845,#343557);border-radius:12px;border:1px solid var(--card-border);margin-bottom:16px}.marketHero h2{font-size:clamp(1.6rem,4vw,2.5rem);margin:.15em 0}.marketHero p{max-width:72ch}.marketProducts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(135px,100%),1fr));gap:8px}.marketProduct{display:grid;gap:6px;padding:12px;background:#20253e;border-radius:9px}.marketArt{font-size:2.4rem;text-align:center;background:#161c31;border-radius:6px}.marketProduct b{color:var(--gold)}.marketGrid button{min-height:40px}.marketOrder{border-top:1px solid var(--card-border);margin-top:14px;padding-top:12px}.marketOrder ul,.marketTrace{padding-left:1.3rem}.marketOrder li,.marketTrace li{margin:.45rem 0}.marketOrder li button{margin-left:8px}.marketActions{display:flex;gap:6px;flex-wrap:wrap;margin:.7rem 0}.marketFlow{display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;margin:12px 0}.marketFlow span{border:1px solid #525874;border-radius:1rem;padding:4px 8px;font-size:.8rem}.marketFlow [aria-current]{background:#ffce86;color:#222138;font-weight:700}.marketLive{background:#111728;border-left:3px solid #8e84d7;border-radius:6px;padding:12px;margin:10px 0}.marketTrace{max-height:240px;overflow:auto}.marketRoute{position:sticky;top:12px}.marketMode{display:flex;align-items:center;gap:8px}.marketMode select{width:auto;margin:0}@media(max-width:800px){.marketGrid{grid-template-columns:1fr}.marketRoute{position:static}}
     .marketLive{display:grid;gap:4px}.marketLive b{color:var(--gold);font-size:1.12rem}.marketLive .edgeShop{margin-left:.55rem;border-left:2px solid #b1a0fb;padding:.4rem .7rem;font-family:var(--mono);font-size:.86rem}.marketLive .outShop{color:#abedbe}.marketTrace li:last-child{color:#fae1b5}.marketGrid h3{margin-bottom:.6rem}
@@ -109,6 +107,16 @@
     #mercFlujo svg{width:100%;min-width:326px;max-height:510px}
     #mercFlujo .etiquetaRuta{paint-order:stroke;stroke:#10172a;stroke-width:3px;stroke-linejoin:round;font:600 11px system-ui,sans-serif}
     a.actionLike{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}
+  </style>
+  <style>
+    .zoomMapa{display:none}
+    @media(max-width:760px){
+      #svgContenedor,#mercFlujo{display:block;min-width:0;max-width:100%;overflow-x:auto}
+      #svgContenedor svg,#mercFlujo svg{display:block;width:100%;height:auto;min-width:0;max-height:none}
+      #svgContenedor.ampliado svg{width:max(165%,560px)}
+      #mercFlujo.ampliado svg{width:max(150%,400px)}
+      .zoomMapa{display:block;align-self:flex-end;margin:4px 0 8px;min-height:44px}
+    }
   </style>
 </head>
 <body>
@@ -173,7 +181,7 @@
       </div>
 
       <div class="card plot"><div class="panel-head"><div><span class="micro" id="microDiagrama">02 / Autómata de Moore</span><h2>Diagrama de estados</h2></div><div style="display:flex;align-items:center;gap:10px;"><label for="tipoDiagrama" style="margin:0;font:700 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);">Modelo</label><select id="tipoDiagrama" aria-label="Modelo del diagrama de estados" style="min-height:34px;padding:4px 8px;font-size:.82rem;flex-shrink:0;width:auto;"><option value="moore" selected>Moore</option><option value="mealy">Mealy</option></select><span class="pill lamp">En vivo</span></div></div>
-        <div id="guiaMealy" hidden><label>Ver flechas de <select id="filtroMoneda"><option value="">Todas las monedas</option></select></label><p>Lee cada flecha como <b>moneda / salida</b>. Arriba, «—» significa que el saldo aumenta sin entrega. Abajo, «V1» significa producto + S/ 1 de vuelto; «V0», pago exacto. Toda venta vuelve a S_0.</p><small>En celular, desliza el diagrama para recorrer los estados.</small></div>
+        <div id="guiaMealy" hidden><label>Ver flechas de <select id="filtroMoneda"><option value="">Todas las monedas</option></select></label><p>Lee cada flecha como <b>moneda / salida</b>. Arriba, «—» significa que el saldo aumenta sin entrega. Abajo, «V1» significa producto + S/ 1 de vuelto; «V0», pago exacto. Toda venta vuelve a S_0.</p></div>
         <div class="svg-container" id="svgContenedor" role="img" aria-label="Diagrama de estados de Moore" tabindex="0"></div>
         <div class="legend"><span class="key"><i></i>Saldo</span><span class="key d"><i></i>Despacho</span><span class="key on"><i></i>Estado actual</span></div><div class="readout"><span class="micro">Último paso</span><b id="ultimoPaso">Inicio en S_0</b></div>
       </div>
@@ -1105,6 +1113,16 @@ window.addEventListener('load', () => {
   construirCatalogo();
   iniciarPedido();
   iniciarMercado();
+  for(const id of ['svgContenedor','mercFlujo']){
+    const mapa=$(id), zoom=document.createElement('button');
+    zoom.type='button'; zoom.className='shareBtn zoomMapa'; zoom.textContent='Ampliar diagrama'; zoom.setAttribute('aria-controls',id);
+    zoom.addEventListener('click',()=>{
+      const grande=mapa.classList.toggle('ampliado');
+      zoom.textContent=grande?'Ver diagrama completo':'Ampliar diagrama';
+      if(!grande) mapa.scrollLeft=0;
+    });
+    mapa.before(zoom);
+  }
   document.querySelectorAll('[data-like]').forEach(b => b.addEventListener('click', () => reaccionar(b)));
   $('menuMovil').addEventListener('click',()=>{const abierta=$('rail').classList.toggle('open');$('menuMovil').setAttribute('aria-expanded',String(abierta));});
   $('rail').addEventListener('keydown',e=>{if(e.key==='Escape'&&$('rail').classList.contains('open')){$('rail').classList.remove('open');$('menuMovil').setAttribute('aria-expanded','false');$('menuMovil').focus();}});
