@@ -24,24 +24,20 @@ with sync_playwright() as w:
     expect(p.locator('#dialogQR .qrLink')).to_have_attribute('href', 'https://cellariusd.github.io/KIOSKODISCRETO/')
     p.keyboard.press('Escape'); expect(p.locator('#dialogQR')).to_be_hidden()
     corazon = p.locator('[data-like]').first
-    formulario = 'https://docs.google.com/forms/d/e/1FAIpQLScVBRp-DVsvGOZj_CEmmAUU-Ad5p1rhXZtmrtdB_t57Xa5k5A/viewform'
+    arena = 'https://script.google.com/a/macros/unmsm.edu.pe/s/AKfycbwvNKjda8KOGjsV45ZVvyvCIBHVkJbTx-nI7VNdB0V3YI3pb_xQhA3EEJ6Z2kcSvEs/exec'
     # Comprobar navegación sin enviar votos ni depender de Google en la prueba.
-    p.context.route(formulario, lambda r: r.fulfill(status=200, content_type='text/html', body='<h1>Formulario de prueba</h1>'))
+    p.context.route(arena, lambda r: r.fulfill(status=200, content_type='text/html', body='<h1>Arena de prueba</h1>'))
     aperturas = []
     p.context.on('page', lambda pagina: aperturas.append(pagina))
     def activar_corazon(boton):
         with p.context.expect_page() as nueva:
             boton.click()
         registro = nueva.value
-        registro.wait_for_url(formulario)
+        registro.wait_for_url(arena)
         assert registro.evaluate('window.opener === null')
         registro.close()
-        expect(boton).to_have_attribute('aria-pressed', 'true')
     activar_corazon(corazon)
-    expect(corazon).to_contain_text('Te gusta')
-    p.reload(); expect(corazon).to_have_attribute('aria-pressed', 'true')
-    corazon.click(); expect(corazon).to_have_attribute('aria-pressed', 'false')
-    assert len(aperturas) == 1, 'Recargar o quitar el corazón no debe abrir el registro'
+    p.reload(); assert len(aperturas) == 1, 'Recargar no debe abrir la votación'
     for ancho in (320, 390, 760, 1280):
         p.set_viewport_size({'width': ancho, 'height': 844})
         assert p.evaluate('document.documentElement.scrollWidth <= innerWidth'), ancho

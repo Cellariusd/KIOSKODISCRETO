@@ -108,6 +108,7 @@
     #mercFlujo{background:#10172a;border:1px solid #38415e;border-radius:10px;padding:6px;overflow-x:auto}
     #mercFlujo svg{width:100%;min-width:326px;max-height:510px}
     #mercFlujo .etiquetaRuta{paint-order:stroke;stroke:#10172a;stroke-width:3px;stroke-linejoin:round;font:600 11px system-ui,sans-serif}
+    a.actionLike{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}
   </style>
 </head>
 <body>
@@ -165,8 +166,8 @@
         <div class="payrow"><strong>Inserta una moneda</strong><small>Un toque = una moneda</small></div>
         <div class="btn-group" id="botonesMonedas"></div>
         <div class="tray"><div class="tray-head">Bandeja de entrega</div><div id="dspBandeja" role="status">Esperando tu primera moneda.</div><div class="vueltoResumen" id="vueltoResumen" role="status"></div></div>
-        <button class="actionLike" data-like aria-pressed="false"><span class="heartIcon" aria-hidden="true">♡</span><span data-like-label>Dar me gusta</span></button>
-        <p class="likeHint" id="reaccionEstado" role="status"></p>
+        <a class="actionLike" data-like href="https://script.google.com/a/macros/unmsm.edu.pe/s/AKfycbwvNKjda8KOGjsV45ZVvyvCIBHVkJbTx-nI7VNdB0V3YI3pb_xQhA3EEJ6Z2kcSvEs/exec" target="_blank" rel="noopener noreferrer"><span class="heartIcon" aria-hidden="true">♥</span>Votar por KIOSKO DISCRETO ↗</a>
+        <p class="likeHint">En la Arena del profesor, busca «7 · Máquina expendedora virtual» y pulsa «❤️ Votar» en nuestra ficha.</p>
         <div class="actions"><button class="btn btn-example" id="btnEjemplo">▷ Ver ejemplo</button><button class="btn btn-cancel" id="btnCancelar">Devolver saldo</button><button class="btn btn-reset" id="btnReiniciar">Reiniciar</button></div>
         <details class="example-note"><summary>Datos del ejemplo</summary><p id="txtEjemplo"></p><p id="txtFormula"></p></details>
       </div>
@@ -278,22 +279,8 @@
   <!-- 6. ME GUSTA -->
   <div id="tab-megusta" class="tab-content">
     <div class="card" data-kicker="Participación / Me gusta"><h2 class="card-title">¿Probaste el kiosco?</h2>
-      <button class="actionLike socialLike" data-like aria-pressed="false"><span class="heartIcon" aria-hidden="true">♡</span><span data-like-label>Dar me gusta</span></button>
-      <p class="muted" id="likeModo" style="margin-bottom:12px;"></p>
-      <form id="formLike" autocomplete="off">
-        <div class="grid-2">
-          <div><label for="likeNombre">Nombres y apellidos:</label><input type="text" id="likeNombre" required maxlength="80" placeholder="Ej: Juan Pérez"></div>
-          <div><label for="likeCodigo">Código de estudiante (8 dígitos):</label><input type="text" id="likeCodigo" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric" placeholder="Ej: 23200123"></div>
-        </div>
-        <label for="likeComentario">¿Qué probaste? (hasta 140 caracteres)</label>
-        <input type="text" id="likeComentario" maxlength="140" placeholder="Ej: Ingresé 2, 2 y 5 y dio el vuelto esperado.">
-        <button type="submit" class="btn btn-like" id="btnLike" style="width:100%;">❤️ Enviar mi «Me gusta»</button>
-      </form>
-      <div class="msg" id="likeMsg" role="status"></div>
-        <div id="resumenLikes" style="margin-top:14px;">
-        <h4 style="color:var(--accent);margin-bottom:6px;">Total de «me gusta»: <span id="likeContador">0</span></h4>
-        <div id="listaLikes" class="muted">Aún no hay votos registrados.</div>
-      </div>
+      <p>En la Arena del profesor, busca el proyecto 7, <strong>KIOSKO DISCRETO – De la teoría a la práctica</strong>. Pulsa «❤️ Votar» en esa ficha y sigue las indicaciones para confirmar tu voto.</p>
+      <a class="actionLike socialLike" data-like href="https://script.google.com/a/macros/unmsm.edu.pe/s/AKfycbwvNKjda8KOGjsV45ZVvyvCIBHVkJbTx-nI7VNdB0V3YI3pb_xQhA3EEJ6Z2kcSvEs/exec" target="_blank" rel="noopener noreferrer"><span class="heartIcon" aria-hidden="true">♥</span>Abrir la votación del profesor ↗</a>
     </div>
   </div>
 
@@ -1064,38 +1051,6 @@ function pintarNumeracion() {
   $('hexTitulo').textContent = '2. Hexadecimal: ' + N + ' = ' + hs.reverse().join('') + '₁₆';
 }
 
-/* ======================= ME GUSTA ======================= */
-function pintarLikes(data) {
-  $('likeContador').textContent = data.total;
-  const c = $('listaLikes'); c.textContent = '';
-  if (!data.likes.length) { c.textContent = 'Aún no hay votos registrados.'; return; }
-  data.likes.forEach(l => {   // textContent: nunca se inserta HTML de usuarios
-    const d = document.createElement('div');
-    d.className = 'box';
-    const n = document.createElement('strong'); n.textContent = l.nombre;
-    const cm = document.createElement('div'); cm.style.cssText = 'color:var(--accent);font-size:.85rem;'; cm.textContent = l.comentario ? '"' + l.comentario + '"' : 'Sin comentario';
-    d.appendChild(n); d.appendChild(cm); c.appendChild(d);
-  });
-}
-function cargarLikes() {
-  if (ES_GAS) {
-    google.script.run.withSuccessHandler(pintarLikes).withFailureHandler(e => { $('likeMsg').className = 'msg bad'; $('likeMsg').textContent = 'No se pudo leer la lista: ' + (e && e.message || e); }).obtenerLikes();
-  }
-}
-function enviarLike(ev) {
-  ev.preventDefault();
-  const nombre = $('likeNombre').value.trim(), codigo = $('likeCodigo').value.trim(), com = $('likeComentario').value.trim();
-  const msg = $('likeMsg'); msg.className = 'msg';
-  if (!/^\d{8}$/.test(codigo)) { msg.className = 'msg bad'; msg.textContent = 'El código debe tener 8 dígitos.'; return; }
-  if (ES_GAS) {
-    $('btnLike').disabled = true;
-    google.script.run
-      .withSuccessHandler(r => { $('btnLike').disabled = false; msg.className = r.ok ? 'msg ok' : 'msg bad'; msg.textContent = r.mensaje; if (r.ok) $('formLike').reset(); cargarLikes(); })
-      .withFailureHandler(e => { $('btnLike').disabled = false; msg.className = 'msg bad'; msg.textContent = 'Error: ' + (e && e.message || e); })
-      .registrarLike(nombre, codigo, com);
-  }
-}
-
 /* ======================= CONFIGURACIÓN ======================= */
 function errorSecuencia() { return 'Usa entre 1 y 32 monedas del modo activo: ' + cfg.monedas.join(', ') + '.'; }
 function cambiarModo(modo) {
@@ -1136,40 +1091,20 @@ function toggle(idBtn, idDiv, textoMostrar, textoOcultar) {
   });
 }
 
-// Reacción visual local; Google Forms confirma el voto por separado.
-let corazonActivo = false;
-try { corazonActivo = localStorage.getItem('kioscoCorazon') === '1'; } catch (e) {}
-function pintarCorazones() {
-  document.querySelectorAll('[data-like]').forEach(b => {
-    b.classList.toggle('liked', corazonActivo);
-    b.setAttribute('aria-pressed', String(corazonActivo));
-    b.querySelector('.heartIcon').textContent = corazonActivo ? '♥' : '♡';
-    b.querySelector('[data-like-label]').textContent = corazonActivo ? 'Te gusta' : 'Dar me gusta';
-  });
-}
 function reaccionar(b) {
-  corazonActivo = !corazonActivo;
-  try { localStorage.setItem('kioscoCorazon', corazonActivo ? '1' : '0'); } catch (e) {}
-  pintarCorazones();
   b.classList.remove('likePop');
-  if (corazonActivo) {
-    // Abrir durante el clic: un retraso puede ser bloqueado como ventana emergente.
-    if (cfg.formulario) window.open(cfg.formulario, '_blank', 'noopener,noreferrer');
     Sfx.meGusta();
     void b.offsetWidth;
     b.classList.add('likePop');
     const corazon = document.createElement('span');
     corazon.className = 'heartBurst'; corazon.textContent = '♥'; corazon.setAttribute('aria-hidden', 'true');
     b.appendChild(corazon); setTimeout(() => corazon.remove(), 850);
-  }
-  $('reaccionEstado').textContent = corazonActivo ? (!ES_GAS && cfg.formulario ? 'Para registrar tu voto, pulsa «Enviar» en el formulario.' : '¡Gracias por tu apoyo!') : 'Reacción retirada.';
 }
 
 window.addEventListener('load', () => {
   construirCatalogo();
   iniciarPedido();
   iniciarMercado();
-  pintarCorazones();
   document.querySelectorAll('[data-like]').forEach(b => b.addEventListener('click', () => reaccionar(b)));
   $('menuMovil').addEventListener('click',()=>{const abierta=$('rail').classList.toggle('open');$('menuMovil').setAttribute('aria-expanded',String(abierta));});
   $('rail').addEventListener('keydown',e=>{if(e.key==='Escape'&&$('rail').classList.contains('open')){$('rail').classList.remove('open');$('menuMovil').setAttribute('aria-expanded','false');$('menuMovil').focus();}});
@@ -1197,26 +1132,11 @@ window.addEventListener('load', () => {
   $('btnEjemplo').addEventListener('click', () => recorrerHoja(cfg.ejemplo));
   $('btnRevelar').addEventListener('click', revelar);
   $('btnEjecutarSec').addEventListener('click', () => { if (!enCurso) ejecutarSecuenciaSorpresa(); });
-  $('formLike').addEventListener('submit', enviarLike);
   toggle('btnVerRec', 'recSolucion', 'Ver procedimiento y probar pagos', 'Ocultar procedimiento');
   toggle('btnVerNum', 'numSolucion', 'Ver divisiones paso a paso', 'Ocultar divisiones');
 
-  $('formLike').hidden = true;
-  $('resumenLikes').hidden = !ES_GAS;
-  if (ES_GAS) {
-    $('likeModo').textContent = 'Consultando el estado de la votación…';
-    google.script.run.withSuccessHandler(info => {
-      $('likeModo').textContent = info.mensaje;
-      $('formLike').hidden = !info.abierta;
-    }).withFailureHandler(() => { $('likeModo').textContent = 'No se pudo consultar la votación. Recarga para reintentar.'; }).estadoVotacion();
-  } else if (cfg.formulario) {
-    $('likeModo').textContent = 'El corazón abre el formulario. Envía tu nombre, código y qué probaste. Tu voto queda registrado cuando Google Forms confirma el envío.';
-  } else {
-    $('likeModo').textContent = 'Google Forms estará disponible cuando el equipo configure su enlace. Por ahora puedes dejar tu corazón; todavía no se registran votos.';
-  }
   cambiarModo('libre');
   refrescarTodo();
-  cargarLikes();
 });
 </script>
 </body>
