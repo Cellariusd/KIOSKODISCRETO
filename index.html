@@ -109,6 +109,9 @@
     a.actionLike{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}
   </style>
   <style>
+    .rail{background-color:#141728;background-image:linear-gradient(to bottom,rgba(17,20,38,.56),rgba(17,20,38,.76) 48%,#141728 100%),url('fondo-fisi.webp');background-size:auto clamp(380px,76vh,720px);background-position:42% top;background-repeat:no-repeat}
+    .railTop strong,.railTop small,#tabs summary,.rail .tab-btn{text-shadow:0 1px 3px #101324}
+    @media(max-width:760px){.rail{background-size:cover;background-position:center,45% 44%}}
     .zoomMapa{display:none}
     @media(max-width:760px){
       #svgContenedor,#mercFlujo{display:block;min-width:0;max-width:100%;overflow-x:auto}
@@ -133,7 +136,7 @@
     <details open><summary>Simuladores</summary><button class="tab-btn active" data-tab="simulador" aria-current="page">▷ Máquina</button><button class="tab-btn" data-tab="tienda"><svg class="cartLogo" aria-hidden="true"><use href="#carroIcono"/></svg> Comercio electrónico</button><button class="tab-btn" data-tab="como">Guía rápida</button></details>
     <details><summary>Cuaderno</summary><button class="tab-btn" data-tab="tablas">Autómata</button><button class="tab-btn" data-tab="recurrencia">Recurrencia</button><button class="tab-btn" data-tab="numeracion">Numeración</button><button class="tab-btn" data-tab="sorpresa">Predicción</button></details>
     <details><summary>Proyecto</summary><button class="tab-btn" data-tab="megusta">Me gusta</button><button class="tab-btn" data-tab="config">Equipo</button></details>
-  </nav><svg class="skyline" viewBox="0 0 180 140" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges"><defs><linearGradient id="atardecer" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#29203d"/><stop offset=".65" stop-color="#865379"/><stop offset="1" stop-color="#d38382"/></linearGradient><pattern id="ventanas" width="11" height="11" patternUnits="userSpaceOnUse"><rect width="3" height="4" x="3" y="2" fill="#b17c98"/></pattern></defs><rect width="180" height="140" fill="url(#atardecer)"/><path fill="#d99892" d="M14 56h38v3H5v-2h9zm90-16h35v3h-48v-2h13z"/><path fill="#33304e" d="M0 84h12V71h10v20h8V66h12v27h8V79h20v18h10V59h4v-7h3v7h5v36h15V75h16v25h13V65h17v25h17V74h10v66H0z"/><path fill="url(#ventanas)" d="M2 91h9v43H2zm29-19h10v62H31zm50-6h10v69H81zm58 6h12v63h-12z"/><path fill="#16182b" d="M0 115h67v8h23v17H0zm110 11h27v-11h25v12h18v13h-70zM30 114v-7h2v-7h4v-5h8v-7h2v-5h2v7h5v-6h2v12h-3v6h-3v11h3v3H31zm1-3h-7v-3h-5v-7h2v5h5v2h5z"/></svg></aside>
+  </nav></aside>
   <dialog class="qrDialog" id="dialogQR" aria-labelledby="tituloQR"><span class="micro">Compartir / Aula</span><h2 id="tituloQR">Abre el kiosco en tu celular</h2><p id="estadoQR">Escanea este código para entrar al Kiosco Discreto.</p><div id="vistaQR"><img class="qrImage" src="qr-kiosco.png" width="260" height="260" alt="Código QR para abrir https://cellariusd.github.io/KIOSKODISCRETO/"></div><a class="qrLink" href="https://cellariusd.github.io/KIOSKODISCRETO/" target="_blank" rel="noopener">cellariusd.github.io/KIOSKODISCRETO/</a><div class="qrActions"><a class="btn btn-example" href="qr-kiosco.png" download="QR-Kiosco-Discreto.png">Descargar QR</a><button class="btn btn-reset" id="cerrarQR">Cerrar</button></div></dialog>
   <main id="contenido" tabindex="-1">
 
