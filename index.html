@@ -112,6 +112,13 @@
     .rail{background-color:#141728;background-image:linear-gradient(to bottom,rgba(17,20,38,.56),rgba(17,20,38,.76) 48%,#141728 100%),url('fondo-fisi.webp');background-size:auto clamp(380px,76vh,720px);background-position:42% top;background-repeat:no-repeat}
     .railTop strong,.railTop small,#tabs summary,.rail .tab-btn{text-shadow:0 1px 3px #101324}
     @media(max-width:760px){.rail{background-size:cover;background-position:center,45% 44%}}
+    /* Una sola vista del campus acompaña el recorrido por todas las pestañas. */
+    @media screen{
+      body{isolation:isolate;background:#101425}
+      body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(12,16,33,.75),rgba(14,18,36,.82) 55%,rgba(11,14,29,.93)),url('fondo-fisi.webp') center 48% / cover no-repeat}
+    }
+    .shopCrumb{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:#ccd1dc;font-size:.8rem}.shopCrumb button{min-height:36px;border:0;padding:0 2px;background:transparent;color:inherit;cursor:pointer}.shopCrumb button:hover{text-decoration:underline}.shopCrumb h2{margin:0;font-size:.85rem;line-height:1.3;font-weight:600;color:#fff}.shopCrumb .divider{color:#9ca4b6}
+    .marketShop .shopBanner{background:#131921}.marketShop .shopDept{background:#232f3e}.shopDept button{color:#fff}.shopDept [aria-pressed="true"]{background:transparent;color:white;box-shadow:inset 0 -2px #ffb44e}
     .zoomMapa{display:none}
     @media(max-width:760px){
       #svgContenedor,#mercFlujo{display:block;min-width:0;max-width:100%;overflow-x:auto}
@@ -203,7 +210,7 @@
 
   <!-- 2. PREDICCIÓN / PREGUNTA SORPRESA -->
   <div id="tab-tienda" class="tab-content">
-    <section class="marketHero"><span class="micro">Del kiosco al marketplace · Proyecto 07</span><h2>Mercado del campus</h2><p>En la máquina cambia el saldo; aquí cambia el pedido. Sigue el pago paso a paso en una tienda inspirada en Amazon y Alibaba. Todos los importes y las tarjetas son de prueba.</p><button class="shareBtn" data-ir="simulador">← Volver a la máquina</button></section>
+    <nav class="shopCrumb" aria-label="Ubicación en el simulador"><button type="button" data-ir="simulador">← Máquina</button><span class="divider" aria-hidden="true">/</span><h2 aria-current="page">Tienda del campus</h2></nav>
     <div class="marketGrid"><section class="card marketShop"><div class="shopBanner"><span class="shopBrand"><img src="imagenes-tienda/amazon.webp" alt="Amazon" class="shopLogo"><strong>Campus Market</strong></span><label class="shopSearch"><input id="mercBuscar" type="search" aria-label="Buscar en Campus Market" placeholder="Buscar en Campus Market"></label><button id="mercVerCarrito" class="shareBtn" type="button"><svg class="cartLogo" aria-hidden="true"><use href="#carroIcono"/></svg> Carrito <b id="mercUnidades">0</b></button></div>
       <div class="shopDept" aria-label="Colecciones"><button data-coleccion="Todo" aria-pressed="true">Todo</button><button data-coleccion="Kit sanmarquino" aria-pressed="false">Kit sanmarquino</button><button data-coleccion="Para clase" aria-pressed="false">Para clase</button></div>
       <div class="shopContent"><div id="mercAviso" class="shopReceipt" hidden><div id="mercConfirmacion" role="status"></div><button type="button" class="btn" id="mercContinuar">Proceder al pago</button></div><div class="shopShelf"><h3>Selección del campus</h3><p>Edición sanmarquina · Precios en soles · Retiro simulado en FISI</p><div class="marketProducts" id="mercProductos"></div></div>
